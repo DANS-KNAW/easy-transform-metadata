@@ -27,7 +27,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   // TODO implement
   //  (1) fetch dataset.xml and files.xml from easy-bag-store
-  //  (2) make files.xml complete
+  //  (2) enrich files.xml
   //      (a) add <accessibleToRights> and <visibleToRights> entities with value 'ANONYMOUS' whenever they're not there
   //          (also take dcterms:accessRight into account as a backwards compatible replacement for these...)
   //      (b) replace the value in 'filepath' with the download url
@@ -38,7 +38,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     for {
       datasetXml <- fetchDatasetXml(datasetId)
       filesXml <- fetchFilesXml(datasetId)
-      upgradedFilesXml <- upgradeFilesXml(filesXml)
+      upgradedFilesXml <- enrichFilesXml(filesXml)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
       _ <- transformer.fold(outputXml(metsXml, output))(t => transform(metsXml, t, output))
     } yield ()
@@ -48,7 +48,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   private def fetchFilesXml(datasetId: DatasetId): Try[Node] = ???
 
-  private def upgradeFilesXml(xml: Node): Try[Node] = ???
+  private def enrichFilesXml(xml: Node): Try[Node] = ???
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
 
