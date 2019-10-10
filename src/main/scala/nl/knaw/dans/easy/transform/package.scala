@@ -18,6 +18,6 @@ package nl.knaw.dans.easy
 import java.util.UUID
 
 package object transform {
-  
+
   type DatasetId = UUID
 }

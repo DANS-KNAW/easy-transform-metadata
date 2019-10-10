@@ -19,7 +19,7 @@ import java.nio.file.Path
 import java.util.UUID
 
 import better.files.File
-import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, ValueConverter, singleArgConverter }
+import org.rogach.scallop.{ ScallopConf, ScallopOption, ValueConverter, singleArgConverter }
 
 class CommandLineOptions(args: Array[String], configuration: Configuration) extends ScallopConf(args) {
   appendDefaultToDescription = true
@@ -61,10 +61,10 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   requireOne(datasetId, listPath)
   dependsOnAll(listPath, List(outputPath))
-  
+
   validatePathExists(listPath)
   validatePathIsFile(listPath)
-  
+
   validatePathExists(transformPath)
   validatePathIsFile(transformPath)
 

@@ -17,8 +17,8 @@ package nl.knaw.dans.easy.transform
 
 import java.io.{ StringReader, Writer }
 
-import javax.xml.transform.{ Source, Transformer }
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
+import javax.xml.transform.{ Source, Transformer }
 
 import scala.util.Try
 import scala.xml.{ Node, PrettyPrinter }

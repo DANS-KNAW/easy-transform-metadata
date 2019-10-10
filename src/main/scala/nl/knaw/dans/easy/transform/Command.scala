@@ -49,6 +49,7 @@ object Command extends App with DebugEnhancedLogging {
       .map(dir => (dir / s"output-$datasetId.xml").createFileIfNotExists())
       .map(file => managed(file.newFileWriter(append = false)))
   }
+
   lazy val consoleOutput: ManagedResource[Writer] = managed(Console.out)
     .flatMap(ps => managed(new OutputStreamWriter(ps)))
 
