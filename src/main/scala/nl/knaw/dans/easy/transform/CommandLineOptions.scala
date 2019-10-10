@@ -68,5 +68,8 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   validatePathExists(transformPath)
   validatePathIsFile(transformPath)
 
+  validatePathExists(outputPath)
+  validatePathIsDirectory(outputPath)
+
   footer("")
 }

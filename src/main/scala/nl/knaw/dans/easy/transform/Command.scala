@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.easy.transform
 
-import java.io.{ FileWriter, OutputStreamWriter, PrintStream, Writer }
+import java.io.{ OutputStreamWriter, Writer }
 import java.util.UUID
 
 import better.files.File
@@ -37,9 +37,6 @@ object Command extends App with DebugEnhancedLogging {
   lazy val multipleDatasetIds: Iterator[DatasetId] = commandLine.list()
     .lineIterator.map(UUID.fromString)
 
-  // TODO this is Java code to use the transformer somehow, somewhere
-  //      Source text = new StreamSource(new File("input.xml"));
-  //      transformer.transform(text, new StreamResult(new File("output.xml")));
   lazy val transformer: Option[Transformer] = commandLine.transform.toOption
     .map(xsltFile => {
       val factory = TransformerFactory.newInstance()
@@ -47,13 +44,16 @@ object Command extends App with DebugEnhancedLogging {
       factory.newTransformer(xslt)
     })
 
-  lazy val fileOutput: Option[ManagedResource[Writer]] = commandLine.output.toOption
-    .map(file => managed(file.newFileWriter(append = true)))
+  def fileOutput(datasetId: DatasetId): Option[ManagedResource[Writer]] = {
+    commandLine.output.toOption
+      .map(dir => (dir / s"output-$datasetId.xml").createFileIfNotExists())
+      .map(file => managed(file.newFileWriter(append = false)))
+  }
   lazy val consoleOutput: ManagedResource[Writer] = managed(Console.out)
     .flatMap(ps => managed(new OutputStreamWriter(ps)))
 
-  for (output <- fileOutput getOrElse consoleOutput;
-       datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds) {
+  for (datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds;
+       output <- fileOutput(datasetId) getOrElse consoleOutput) {
     app.processDataset(datasetId, transformer, output)
   }
 }
