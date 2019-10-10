@@ -28,8 +28,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   // TODO implement
   //  (1) fetch dataset.xml and files.xml from easy-bag-store
   //  (2) enrich files.xml
-  //      (a) add <accessibleToRights> and <visibleToRights> entities with value 'ANONYMOUS' whenever they're not there
-  //          (also take dcterms:accessRight into account as a backwards compatible replacement for these...)
+  //      (a) add <accessibleToRights> and <visibleToRights> if they're not provided; take dataset.xml - ddm:accessRight into account
   //      (b) replace the value in 'filepath' with the download url
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
@@ -40,7 +39,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
       filesXml <- fetchFilesXml(datasetId)
       upgradedFilesXml <- enrichFilesXml(filesXml)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
-      _ <- transformer.fold(outputXml(metsXml, output))(t => transform(metsXml, t, output))
+      _ <- transformer.fold(outputXml(metsXml, output))(transform(metsXml, output))
     } yield ()
   }
 
@@ -52,7 +51,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
 
-  private def transform(xml: Node, transformer: Transformer, output: Writer): Try[Unit] = Try {
+  private def transform(xml: Node, output: Writer)(transformer: Transformer): Try[Unit] = Try {
     val input: Source = new StreamSource(new StringReader(xml.toString()))
     transformer.transform(input, new StreamResult(output))
   }
