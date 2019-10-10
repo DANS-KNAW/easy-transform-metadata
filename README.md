@@ -25,7 +25,8 @@ ARGUMENTS
        -o, --output  <arg>      The directory in which to output the resultant metadata. If '-d' is used, this is
                                 optional (default to stdout); if '-l' is used, this argument is mandatory.
        -t, --transform  <arg>   The file containing an XSLT to be applied to the metadata of the given dataset(s);
-                                if not provided, no transformation will be performed, but the input for the transformation will be returned.
+                                if not provided, no transformation will be performed, but the input for the
+                                transformation will be returned.
        -h, --help               Show help message
        -v, --version            Show version of this program
 
