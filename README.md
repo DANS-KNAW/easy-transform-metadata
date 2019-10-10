@@ -25,14 +25,15 @@ ARGUMENTS
        -o, --output  <arg>      The directory in which to output the resultant metadata. If '-d' is used, this is
                                 optional (default to stdout); if '-l' is used, this argument is mandatory.
        -t, --transform  <arg>   The file containing an XSLT to be applied to the metadata of the given dataset(s);
-                                if not provided, no transformation will be performed
+                                if not provided, no transformation will be performed, but the input for the transformation will be returned.
        -h, --help               Show help message
        -v, --version            Show version of this program
 
 EXAMPLES
 --------
 
-    easy-transform-metadata -o value
+    easy-transform-metadata -d b2149eb8-eb51-11e9-896f-6b3af1277c7b -t my-transformation.xslt
+    easy-transform-metadata -l my-datasetIds.txt -t my-transformation.xslt -o transformation-output/
 
 
 INSTALLATION AND CONFIGURATION

@@ -52,7 +52,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   val list: ScallopOption[File] = listPath.map(File(_))
   private val transformPath: ScallopOption[Path] = opt("transform", short = 't',
     descr = "The file containing an XSLT to be applied to the metadata of the given dataset(s); " +
-      "if not provided, no transformation will be performed")
+      "if not provided, no transformation will be performed, but the input for the transformation will be returned.")
   val transform: ScallopOption[File] = transformPath.map(File(_))
   private val outputPath: ScallopOption[Path] = opt("output", short = 'o',
     descr = "The directory in which to output the resultant metadata. " +
