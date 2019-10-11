@@ -15,15 +15,17 @@
  */
 package nl.knaw.dans.easy.transform
 
-import java.io.{ StringReader, Writer }
+import java.io.{ StringReader, StringWriter, Writer }
 
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
 import javax.xml.transform.{ Source, Transformer }
 
 import scala.util.Try
-import scala.xml.{ Node, PrettyPrinter }
+import scala.xml.{ Node, PrettyPrinter, XML }
 
 class EasyTransformMetadataApp(configuration: Configuration) {
+
+  private lazy val prettyPrinter = new PrettyPrinter(160, 2)
 
   // TODO implement
   //  (1) fetch dataset.xml and files.xml from easy-bag-store
@@ -39,7 +41,8 @@ class EasyTransformMetadataApp(configuration: Configuration) {
       filesXml <- fetchFilesXml(datasetId)
       upgradedFilesXml <- enrichFilesXml(filesXml)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
-      _ <- transformer.fold(outputXml(metsXml, output))(transform(metsXml, output))
+      resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
+      _ <- outputXml(resultXml, output)
     } yield ()
   }
 
@@ -51,13 +54,15 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
 
-  private def transform(xml: Node, output: Writer)(transformer: Transformer): Try[Unit] = Try {
+  private def transform(xml: Node)(transformer: Transformer): Try[Node] = Try {
     val input: Source = new StreamSource(new StringReader(xml.toString()))
+    val output = new StringWriter()
     transformer.transform(input, new StreamResult(output))
+
+    XML.loadString(output.toString)
   }
 
   private def outputXml(xml: Node, output: Writer): Try[Unit] = Try {
-    val xmlOutput = new PrettyPrinter(160, 2).format(xml)
-    output.write(xmlOutput)
+    output.write(prettyPrinter.format(xml))
   }
 }
