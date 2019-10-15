@@ -33,8 +33,8 @@ ARGUMENTS
 EXAMPLES
 --------
 
-    easy-transform-metadata -d b2149eb8-eb51-11e9-896f-6b3af1277c7b -t my-transformation.xslt
-    easy-transform-metadata -l my-datasetIds.txt -t my-transformation.xslt -o transformation-output/
+    easy-transform-metadata -b b2149eb8-eb51-11e9-896f-6b3af1277c7b -t my-transformation.xslt
+    easy-transform-metadata -l my-bagIds.txt -t my-transformation.xslt -o transformation-output/
 
 
 INSTALLATION AND CONFIGURATION
