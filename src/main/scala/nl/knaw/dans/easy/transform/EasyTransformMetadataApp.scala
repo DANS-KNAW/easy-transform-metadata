@@ -19,23 +19,23 @@ import java.io.{ StringReader, StringWriter, Writer }
 
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
 import javax.xml.transform.{ Source, Transformer }
+import nl.knaw.dans.easy.transform.bagstore.BagStore
 
 import scala.util.Try
 import scala.xml.{ Node, PrettyPrinter, XML }
 
-class EasyTransformMetadataApp(configuration: Configuration) {
+class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(configuration) {
 
   private lazy val prettyPrinter = new PrettyPrinter(160, 2)
 
   // TODO implement
-  //  (1) fetch dataset.xml and files.xml from easy-bag-store
   //  (2) enrich files.xml
   //      (a) add <accessibleToRights> and <visibleToRights> if they're not provided; take dataset.xml - ddm:accessRight into account
   //      (b) replace the value in 'filepath' with the download url
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
 
-  def processDataset(datasetId: DatasetId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
+  def processDataset(configuration: Configuration, datasetId: DatasetId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(datasetId)
       filesXml <- fetchFilesXml(datasetId)
@@ -46,9 +46,13 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     } yield ()
   }
 
-  private def fetchDatasetXml(datasetId: DatasetId): Try[Node] = ???
+  def fetchDatasetXml(datasetId: DatasetId): Try[Node] = {
+    loadDatasetXml(datasetId)
+  }
 
-  private def fetchFilesXml(datasetId: DatasetId): Try[Node] = ???
+  def fetchFilesXml(datasetId: DatasetId): Try[Node] = {
+    loadFilesXml(datasetId)
+  }
 
   private def enrichFilesXml(xml: Node): Try[Node] = ???
 

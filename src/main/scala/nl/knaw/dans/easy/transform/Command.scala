@@ -24,8 +24,6 @@ import javax.xml.transform.{ Transformer, TransformerFactory }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import resource.{ ManagedResource, managed }
 
-import scala.language.reflectiveCalls
-
 object Command extends App with DebugEnhancedLogging {
   val configuration = Configuration(File(System.getProperty("app.home")))
   val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
@@ -55,6 +53,6 @@ object Command extends App with DebugEnhancedLogging {
 
   for (datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds;
        output <- fileOutput(datasetId) getOrElse consoleOutput) {
-    app.processDataset(datasetId, transformer, output)
+    app.processDataset(configuration, datasetId, transformer, output)
   }
 }
