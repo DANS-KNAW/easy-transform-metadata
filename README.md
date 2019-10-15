@@ -56,7 +56,7 @@ Steps:
     #!bash
     git clone https://github.com/DANS-KNAW/easy-transform-metadata.git
     cd easy-transform-metadata 
-    mvn install
+    mvn clean install
 
 If the `rpm` executable is found at `/usr/local/bin/rpm`, the build profile that includes the RPM 
 packaging will be activated. If `rpm` is available, but at a different path, then activate it by using
