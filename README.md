@@ -5,7 +5,7 @@ easy-transform-metadata
 SYNOPSIS
 --------
 
-    easy-transform-metadata [-d,--bagId|-l,--list] [-t,--transform] [-o,--output]
+    easy-transform-metadata [-b,--bagId|-l,--list] [-t,--transform] [-o,--output]
 
 
 DESCRIPTION
@@ -19,13 +19,13 @@ ARGUMENTS
 
     Options:
 
-       -d, --bagId  <arg>       The bag for which to transform the metadata
-       -l, --list  <arg>        A file containing a newline separated list of bag-ids for which to
-                                transform the metadata
-       -o, --output  <arg>      The directory in which to output the resulting metadata. If '-d' is used, this is
+       -b, --bagId  <arg>       The bag for which to transform the metadata
+       -l, --list  <arg>        A file containing a newline separated list of bag-ids for which to transform the
+                                metadata
+       -o, --output  <arg>      The directory in which to output the resulting metadata. If '-b' is used, this is
                                 optional (default to stdout); if '-l' is used, this argument is mandatory.
-       -t, --transform  <arg>   The file containing an XSLT to be applied to the metadata of the given bag(s);
-                                if not provided, no transformation will be performed, but the input for the
+       -t, --transform  <arg>   The file containing an XSLT to be applied to the metadata of the given bags(s); if
+                                not provided, no transformation will be performed, but the input for the
                                 transformation will be returned.
        -h, --help               Show help message
        -v, --version            Show version of this program
