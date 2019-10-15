@@ -54,7 +54,7 @@ Prerequisites:
 Steps:
     
     #!bash
-    git clone https://github.com/DANS-KNAW/easy-transform-metadata .git
+    git clone https://github.com/DANS-KNAW/easy-transform-metadata.git
     cd easy-transform-metadata 
     mvn install
 
