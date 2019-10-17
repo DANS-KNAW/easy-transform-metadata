@@ -29,7 +29,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   val description: String = "Tool to transform EASY metadata (dataset.xml en files.xml) into other formats"
   val synopsis: String =
     s"""
-       |  $printedName <[--datasetId|-d]|[--list|-l]> [--transform|-t] [--output|-o]""".stripMargin
+       |  $printedName [-b,--bagId|-l,--list] [-t,--transform] [-o,--output]""".stripMargin
 
   version(s"$printedName v${ configuration.version }")
   banner(
@@ -45,18 +45,18 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   private implicit val uuidParser: ValueConverter[UUID] = singleArgConverter(UUID.fromString)
 
-  val datasetId: ScallopOption[DatasetId] = opt("datasetId", short = 'd',
-    descr = "The datasetId (UUID) for which to transform the metadata")
+  val datasetId: ScallopOption[DatasetId] = opt("bagId", short = 'b',
+    descr = "The bag for which to transform the metadata")
   private val listPath: ScallopOption[Path] = opt("list", short = 'l',
-    descr = "A file containing a newline separated list of datasetIds (UUID) for which to transform the metadata")
+    descr = "A file containing a newline separated list of bag-ids for which to transform the metadata")
   val list: ScallopOption[File] = listPath.map(File(_))
   private val transformPath: ScallopOption[Path] = opt("transform", short = 't',
-    descr = "The file containing an XSLT to be applied to the metadata of the given dataset(s); " +
+    descr = "The file containing an XSLT to be applied to the metadata of the given bags(s); " +
       "if not provided, no transformation will be performed, but the input for the transformation will be returned.")
   val transform: ScallopOption[File] = transformPath.map(File(_))
   private val outputPath: ScallopOption[Path] = opt("output", short = 'o',
-    descr = "The directory in which to output the resultant metadata. " +
-      "If '-d' is used, this is optional (default to stdout); if '-l' is used, this argument is mandatory.")
+    descr = "The directory in which to output the resulting metadata. " +
+      "If '-b' is used, this is optional (default to stdout); if '-l' is used, this argument is mandatory.")
   val output: ScallopOption[File] = outputPath.map(File(_))
 
   requireOne(datasetId, listPath)
