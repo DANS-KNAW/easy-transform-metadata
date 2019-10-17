@@ -22,8 +22,12 @@ import nl.knaw.dans.easy.transform.bagstore.BagStoreConfig
 import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.{ MockResponse, MockWebServer }
+import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
+import scalaj.http.HttpResponse
 
-class EasyTransformMetadataAppSpec extends TestSupportFixture {
+import scala.util.{ Failure, Success }
+
+class EasyTransformMetadataAppSpec extends TestSupportFixture with BeforeAndAfterAll with BeforeAndAfterEach {
 
   // configure the mock server
   private val server = new MockWebServer
@@ -34,15 +38,26 @@ class EasyTransformMetadataAppSpec extends TestSupportFixture {
   private val app = new EasyTransformMetadataApp(Configuration("1.0.0", BagStoreConfig(baseUrl.uri(), 0l, 0l), new URI("")))
   private val bagId: BagId = UUID.fromString("0000000-0000-0000-0000-000000000001")
 
+  override protected def afterAll(): Unit = {
+    server.shutdown()
+    super.afterAll()
+  }
+
   "loadDatasetXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ddm:DDM>-</ddm:DDM>"))
-    val datasetXml = app.loadDatasetXml(bagId)
+    app.loadDatasetXml(bagId) should matchPattern { case Success(<ddm:DDM>-</ddm:DDM>) => }
     server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
+  }
+
+  it should "fail" in {
+    server.enqueue(new MockResponse().setResponseCode(404).setBody("ERROR!!!"))
+    app.loadDatasetXml(bagId) shouldBe matchPattern { case Failure(HttpStatusException(_, HttpResponse("ERROR!!!", 404, _))) => }
+    server.takeRequest().getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
   }
 
   "loadFilesXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><files>-</files>"))
-    val filesXml = app.loadFilesXml(bagId)
+    app.loadFilesXml(bagId) should matchPattern { case Success(<files>-</files>) => }
     server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/files.xml HTTP/1.1"
   }
 }
