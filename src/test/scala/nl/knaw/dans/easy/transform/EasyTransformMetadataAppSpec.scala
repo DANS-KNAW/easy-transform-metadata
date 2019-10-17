@@ -43,21 +43,31 @@ class EasyTransformMetadataAppSpec extends TestSupportFixture with BeforeAndAfte
     super.afterAll()
   }
 
-  "loadDatasetXml" should "fetch the xml-file from a correct location" in {
+  "fetchDatasetXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ddm:DDM>-</ddm:DDM>"))
-    app.loadDatasetXml(bagId) should matchPattern { case Success(<ddm:DDM>-</ddm:DDM>) => }
+    app.fetchDatasetXml(bagId) should matchPattern { case Success(<ddm:DDM>-</ddm:DDM>) => }
     server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
   }
 
-  it should "fail" in {
+  it should "fail if the server returns 404" in {
     server.enqueue(new MockResponse().setResponseCode(404).setBody("ERROR!!!"))
-    app.loadDatasetXml(bagId) shouldBe matchPattern { case Failure(HttpStatusException(_, HttpResponse("ERROR!!!", 404, _))) => }
+    inside(app.fetchDatasetXml(bagId)) {
+      case Failure(HttpStatusException(_, response)) =>
+        response.body shouldBe "ERROR!!!"
+        response.code shouldBe 404
+    }
     server.takeRequest().getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
   }
 
-  "loadFilesXml" should "fetch the xml-file from a correct location" in {
+  it should "have userAgent in the header of the request" in {
+    server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ddm:DDM>-</ddm:DDM>"))
+    app.fetchDatasetXml(bagId) shouldBe a[Success[_]]
+    server.takeRequest().getHeader("User-Agent") shouldBe "easy-transform-metadata/1.0.0"
+  }
+
+  "fetchFilesXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><files>-</files>"))
-    app.loadFilesXml(bagId) should matchPattern { case Success(<files>-</files>) => }
+    app.fetchFilesXml(bagId) should matchPattern { case Success(<files>-</files>) => }
     server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/files.xml HTTP/1.1"
   }
 }
