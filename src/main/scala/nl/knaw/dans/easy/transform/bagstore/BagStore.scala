@@ -25,7 +25,7 @@ import scala.language.postfixOps
 import scala.util.{ Failure, Success, Try }
 import scala.xml.{ Elem, XML }
 
-abstract class BagStore(configuration: Configuration) extends DebugEnhancedLogging {
+class BagStore(configuration: Configuration) extends DebugEnhancedLogging {
 
   val baseUrl: URI = configuration.bagStoreConfig.baseURL
   object Http extends BaseHttp(userAgent = s"easy-transform-metadata/${ configuration.version }")

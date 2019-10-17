@@ -24,9 +24,10 @@ import nl.knaw.dans.easy.transform.bagstore.BagStore
 import scala.util.Try
 import scala.xml.{ Node, PrettyPrinter, XML }
 
-class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(configuration) {
+class EasyTransformMetadataApp(configuration: Configuration) {
 
   private lazy val prettyPrinter = new PrettyPrinter(160, 2)
+  private val bagStore = new BagStore(configuration)
 
   // TODO implement
   //  (2) enrich files.xml
@@ -35,7 +36,7 @@ class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(co
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
 
-  def processDataset(configuration: Configuration, bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
+  def processDataset(bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(bagId)
       filesXml <- fetchFilesXml(bagId)
@@ -47,11 +48,11 @@ class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(co
   }
 
   def fetchDatasetXml(bagId: BagId): Try[Node] = {
-    loadDatasetXml(bagId)
+    bagStore.loadDatasetXml(bagId)
   }
 
   def fetchFilesXml(bagId: BagId): Try[Node] = {
-    loadFilesXml(bagId)
+    bagStore.loadFilesXml(bagId)
   }
 
   private def enrichFilesXml(xml: Node): Try[Node] = ???
