@@ -32,7 +32,7 @@ class EasyTransformMetadataAppSpec extends TestSupportFixture {
   private val baseUrl: HttpUrl = server.url(test_server)
 
   private val app = new EasyTransformMetadataApp(Configuration("1.0.0", BagStoreConfig(baseUrl.uri(), 0l, 0l), new URI("")))
-  private val bagId: DatasetId = UUID.fromString("0000000-0000-0000-0000-000000000001")
+  private val bagId: BagId = UUID.fromString("0000000-0000-0000-0000-000000000001")
 
   "loadDatasetXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ddm:DDM>-</ddm:DDM>"))

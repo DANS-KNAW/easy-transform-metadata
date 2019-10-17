@@ -35,10 +35,10 @@ class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(co
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
 
-  def processDataset(configuration: Configuration, datasetId: DatasetId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
+  def processDataset(configuration: Configuration, bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
-      datasetXml <- fetchDatasetXml(datasetId)
-      filesXml <- fetchFilesXml(datasetId)
+      datasetXml <- fetchDatasetXml(bagId)
+      filesXml <- fetchFilesXml(bagId)
       upgradedFilesXml <- enrichFilesXml(filesXml)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
       resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
@@ -46,12 +46,12 @@ class EasyTransformMetadataApp(configuration: Configuration) extends BagStore(co
     } yield ()
   }
 
-  def fetchDatasetXml(datasetId: DatasetId): Try[Node] = {
-    loadDatasetXml(datasetId)
+  def fetchDatasetXml(bagId: BagId): Try[Node] = {
+    loadDatasetXml(bagId)
   }
 
-  def fetchFilesXml(datasetId: DatasetId): Try[Node] = {
-    loadFilesXml(datasetId)
+  def fetchFilesXml(bagId: BagId): Try[Node] = {
+    loadFilesXml(bagId)
   }
 
   private def enrichFilesXml(xml: Node): Try[Node] = ???

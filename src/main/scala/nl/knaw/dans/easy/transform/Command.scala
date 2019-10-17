@@ -33,8 +33,8 @@ object Command extends App with DebugEnhancedLogging {
   }
   val app = new EasyTransformMetadataApp(configuration)
 
-  lazy val singleDatasetId: Option[DatasetId] = commandLine.datasetId.toOption
-  lazy val multipleDatasetIds: Iterator[DatasetId] = commandLine.list()
+  lazy val singleBagId: Option[BagId] = commandLine.bagId.toOption
+  lazy val multipleBagIds: Iterator[BagId] = commandLine.list()
     .lineIterator.map(UUID.fromString)
 
   lazy val transformer: Option[Transformer] = commandLine.transform.toOption
@@ -44,27 +44,26 @@ object Command extends App with DebugEnhancedLogging {
       factory.newTransformer(xslt)
     })
 
-  def fileOutput(datasetId: DatasetId): Option[ManagedResource[Writer]] = {
+  def fileOutput(bagId: BagId): Option[ManagedResource[Writer]] = {
     commandLine.output.toOption
-      .map(dir => (dir / s"output-$datasetId.xml").createFileIfNotExists())
+      .map(dir => (dir / s"output-$bagId.xml").createFileIfNotExists())
       .map(file => managed(file.newFileWriter(append = false)))
   }
 
   lazy val consoleOutput: ManagedResource[Writer] = managed(Console.out)
     .flatMap(ps => managed(new OutputStreamWriter(ps)))
 
-  def process(datasetId: DatasetId, output: Writer): Unit = {
-    app.processDataset(configuration, datasetId, transformer, output)
+  def process(bagId: BagId, output: Writer): Unit = {
+    app.processDataset(configuration, bagId, transformer, output)
     match {
-      case Success(result) => println(s"OK")
-      case Failure(e) => {
+      case Success(_) =>
+      case Failure(e) =>
         logger.error(e.getMessage, e)
         println(s"FAILED: ${ e.getMessage }")
-      }
     }
   }
 
-  for (datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds;
-       output <- fileOutput(datasetId) getOrElse consoleOutput)
-    process(datasetId, output)
+  for (bagId <- singleBagId.map(Iterator(_)) getOrElse multipleBagIds;
+       output <- fileOutput(bagId) getOrElse consoleOutput)
+    process(bagId, output)
 }

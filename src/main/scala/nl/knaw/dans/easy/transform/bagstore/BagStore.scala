@@ -17,7 +17,7 @@ package nl.knaw.dans.easy.transform.bagstore
 
 import java.net.{ URI, URL }
 
-import nl.knaw.dans.easy.transform.{ Configuration, DatasetId, HttpStatusException }
+import nl.knaw.dans.easy.transform.{ Configuration, BagId, HttpStatusException }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import scalaj.http.BaseHttp
 
@@ -30,11 +30,11 @@ abstract class BagStore(configuration: Configuration) extends DebugEnhancedLoggi
   val baseUrl: URI = configuration.bagStoreConfig.baseURL
   object Http extends BaseHttp(userAgent = s"easy-transform-metadata/${ configuration.version }")
 
-  def loadDatasetXml(bagId: DatasetId): Try[Elem] = {
+  def loadDatasetXml(bagId: BagId): Try[Elem] = {
     loadXml(new URL(baseUrl.toString + s"bags/$bagId/metadata/dataset.xml"))
   }
 
-  def loadFilesXml(bagId: DatasetId): Try[Elem] = {
+  def loadFilesXml(bagId: BagId): Try[Elem] = {
     loadXml(new URL(baseUrl.toString + s"bags/$bagId/metadata/files.xml"))
   }
 

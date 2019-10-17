@@ -45,7 +45,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   private implicit val uuidParser: ValueConverter[UUID] = singleArgConverter(UUID.fromString)
 
-  val datasetId: ScallopOption[DatasetId] = opt("bagId", short = 'b',
+  val bagId: ScallopOption[BagId] = opt("bagId", short = 'b',
     descr = "The bag for which to transform the metadata")
   private val listPath: ScallopOption[Path] = opt("list", short = 'l',
     descr = "A file containing a newline separated list of bag-ids for which to transform the metadata")
@@ -59,7 +59,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
       "If '-b' is used, this is optional (default to stdout); if '-l' is used, this argument is mandatory.")
   val output: ScallopOption[File] = outputPath.map(File(_))
 
-  requireOne(datasetId, listPath)
+  requireOne(bagId, listPath)
   dependsOnAll(listPath, List(outputPath))
 
   validatePathExists(listPath)
