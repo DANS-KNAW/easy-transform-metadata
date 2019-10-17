@@ -31,18 +31,18 @@ abstract class BagStore(configuration: Configuration) extends DebugEnhancedLoggi
   object Http extends BaseHttp(userAgent = s"easy-transform-metadata/${ configuration.version }")
 
   def loadDatasetXml(bagId: BagId): Try[Elem] = {
-    loadXml(new URL(baseUrl.toString + s"bags/$bagId/metadata/dataset.xml"))
+    loadXml(baseUrl.resolve(s"bags/$bagId/metadata/dataset.xml"))
   }
 
   def loadFilesXml(bagId: BagId): Try[Elem] = {
-    loadXml(new URL(baseUrl.toString + s"bags/$bagId/metadata/files.xml"))
+    loadXml(baseUrl.resolve(s"bags/$bagId/metadata/files.xml"))
   }
 
-  private def loadXml(url: URL): Try[Elem] = {
+  private def loadXml(uri: URI): Try[Elem] = {
     for {
-      response <- Try { Http(url.toString).method("GET").asString }
+      response <- Try { Http(uri.toString).method("GET").asString }
       _ <- if (response.isSuccess) Success(())
-           else Failure(HttpStatusException(url.toString, response))
+           else Failure(HttpStatusException(uri.toString, response))
     } yield XML.loadString(response.body)
   }
 }
