@@ -17,7 +17,11 @@ package nl.knaw.dans.easy
 
 import java.util.UUID
 
+import scalaj.http.HttpResponse
+
 package object transform {
 
-  type DatasetId = UUID
+  type BagId = UUID
+
+  case class HttpStatusException(msg: String, response: HttpResponse[String]) extends Exception(s"$msg - ${ response.statusLine }, details: ${ response.body }")
 }
