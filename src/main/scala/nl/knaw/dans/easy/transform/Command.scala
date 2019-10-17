@@ -54,12 +54,12 @@ object Command extends App with DebugEnhancedLogging {
     .flatMap(ps => managed(new OutputStreamWriter(ps)))
 
   def process(bagId: BagId, output: Writer): Unit = {
-    app.processDataset(configuration, bagId, transformer, output)
+    app.processDataset(bagId, transformer, output)
     match {
       case Success(_) =>
       case Failure(e) =>
         logger.error(e.getMessage, e)
-        println(s"FAILED: ${ e.getMessage }")
+        Console.err.println(s"FAILED: ${ e.getMessage }")
     }
   }
 
