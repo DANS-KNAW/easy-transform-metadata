@@ -22,7 +22,6 @@ import scalaj.http.HttpResponse
 package object transform {
 
   type BagId = UUID
-  type Identifiers = List[BagId]
 
   case class HttpStatusException(msg: String, response: HttpResponse[String]) extends Exception(s"$msg - ${ response.statusLine }, details: ${ response.body }")
 }
