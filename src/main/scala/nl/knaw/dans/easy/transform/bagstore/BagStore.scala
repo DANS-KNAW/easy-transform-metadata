@@ -28,6 +28,8 @@ import scala.xml.{ Elem, XML }
 class BagStore(configuration: Configuration) extends DebugEnhancedLogging {
 
   val baseUrl: URI = configuration.bagStoreConfig.baseURL
+  val connectTimeout: Int = configuration.bagStoreConfig.connectTimeout.toInt
+  val readTimeout: Int = configuration.bagStoreConfig.readTimeout.toInt
   object Http extends BaseHttp(userAgent = s"easy-transform-metadata/${ configuration.version }")
 
   def loadDatasetXml(bagId: BagId): Try[Elem] = {
@@ -40,7 +42,7 @@ class BagStore(configuration: Configuration) extends DebugEnhancedLogging {
 
   private def loadXml(uri: URI): Try[Elem] = {
     for {
-      response <- Try { Http(uri.toString).method("GET").asString }
+      response <- Try { Http(uri.toString).method("GET").timeout(connectTimeout, readTimeout).asString }
       _ <- if (response.isSuccess) Success(())
            else Failure(HttpStatusException(uri.toString, response))
     } yield XML.loadString(response.body)
