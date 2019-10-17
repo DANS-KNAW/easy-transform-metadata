@@ -24,6 +24,8 @@ import javax.xml.transform.{ Transformer, TransformerFactory }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import resource.{ ManagedResource, managed }
 
+import scala.util.{ Failure, Success }
+
 object Command extends App with DebugEnhancedLogging {
   val configuration = Configuration(File(System.getProperty("app.home")))
   val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
@@ -51,8 +53,18 @@ object Command extends App with DebugEnhancedLogging {
   lazy val consoleOutput: ManagedResource[Writer] = managed(Console.out)
     .flatMap(ps => managed(new OutputStreamWriter(ps)))
 
-  for (datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds;
-       output <- fileOutput(datasetId) getOrElse consoleOutput) {
+  def process(datasetId: DatasetId, output: Writer): Unit = {
     app.processDataset(configuration, datasetId, transformer, output)
+    match {
+      case Success(result) => println(s"OK")
+      case Failure(e) => {
+        logger.error(e.getMessage, e)
+        println(s"FAILED: ${ e.getMessage }")
+      }
+    }
   }
+
+  for (datasetId <- singleDatasetId.map(Iterator(_)) getOrElse multipleDatasetIds;
+       output <- fileOutput(datasetId) getOrElse consoleOutput)
+    process(datasetId, output)
 }

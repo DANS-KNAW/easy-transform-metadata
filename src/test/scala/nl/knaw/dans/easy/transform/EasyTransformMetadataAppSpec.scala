@@ -34,17 +34,15 @@ class EasyTransformMetadataAppSpec extends TestSupportFixture {
   private val app = new EasyTransformMetadataApp(Configuration("1.0.0", BagStoreConfig(baseUrl.uri(), 0l, 0l), new URI("")))
   private val bagId: DatasetId = UUID.fromString("0000000-0000-0000-0000-000000000001")
 
-  "loadDatasetXml" should "return a correct xml-file" in {
+  "loadDatasetXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ddm:DDM>-</ddm:DDM>"))
     val datasetXml = app.loadDatasetXml(bagId)
-    server.takeRequest.toString shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
-    datasetXml.getOrElse("") shouldBe <ddm:DDM>-</ddm:DDM>
+    server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/dataset.xml HTTP/1.1"
   }
 
-  "loadFilesXml" should "return a correct xml-file" in {
+  "loadFilesXml" should "fetch the xml-file from a correct location" in {
     server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?><files>-</files>"))
     val filesXml = app.loadFilesXml(bagId)
-    server.takeRequest.toString shouldBe s"GET ${ test_server }bags/$bagId/metadata/files.xml HTTP/1.1"
-    filesXml.getOrElse("") shouldBe <files>-</files>
+    server.takeRequest.getRequestLine shouldBe s"GET ${ test_server }bags/$bagId/metadata/files.xml HTTP/1.1"
   }
 }
