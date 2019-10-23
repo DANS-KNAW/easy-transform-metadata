@@ -23,5 +23,17 @@ package object transform {
 
   type BagId = UUID
 
+  val OPEN_ACCESS = "OPEN_ACCESS"
+  val REQUEST_PERMISSION = "REQUEST_PERMISSION"
+  val NO_ACCESS = "NO_ACCESS"
+
+  val ANONYMOUS = "ANONYMOUS"
+  val RESTRICTED_REQUEST = "RESTRICTED_REQUEST"
+
+  object AccessRights extends Enumeration {
+    type AccessRights = Value
+    val OPEN_ACCESS, REQUEST_PERMISSION, NO_ACCESS = Value
+  }
+
   case class HttpStatusException(msg: String, response: HttpResponse[String]) extends Exception(s"$msg - ${ response.statusLine }, details: ${ response.body }")
 }

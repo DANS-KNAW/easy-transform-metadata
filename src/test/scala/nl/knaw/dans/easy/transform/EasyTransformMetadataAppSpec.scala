@@ -23,7 +23,6 @@ import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.{ MockResponse, MockWebServer }
 import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
-import scalaj.http.HttpResponse
 
 import scala.util.{ Failure, Success }
 

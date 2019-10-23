@@ -19,6 +19,7 @@ import java.io.{ StringReader, StringWriter, Writer }
 
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
 import javax.xml.transform.{ Source, Transformer }
+import nl.knaw.dans.easy.transform.AccessRights.AccessRights
 import nl.knaw.dans.easy.transform.bagstore.BagStore
 
 import scala.util.Try
@@ -28,6 +29,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   private lazy val prettyPrinter = new PrettyPrinter(160, 2)
   private val bagStore = new BagStore(configuration)
+  private val xmlTransformation = new XmlTransformation()
 
   // TODO implement
   //  (2) enrich files.xml
@@ -40,7 +42,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     for {
       datasetXml <- fetchDatasetXml(bagId)
       filesXml <- fetchFilesXml(bagId)
-      upgradedFilesXml <- enrichFilesXml(filesXml)
+      upgradedFilesXml <- enrichFilesXml(filesXml, AccessRights.withName((datasetXml \ "accessRights").head.text))
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
       resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
       _ <- outputXml(resultXml, output)
@@ -55,7 +57,9 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     bagStore.loadFilesXml(bagId)
   }
 
-  private def enrichFilesXml(xml: Node): Try[Node] = ???
+  private def enrichFilesXml(xml: Node, accessRights: AccessRights): Try[Node] = Try {
+    xmlTransformation.enrichFilesXml(xml, accessRights)
+  }
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
 

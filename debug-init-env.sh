@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
+DATADIR=data
+
+echo "Copying test data to $DATADIR..."
+cp -r src/test/resources/metadata $DATADIR/metadata
+
 echo -n "Pre-creating log..."
-TEMPDIR=data
 touch $TEMPDIR/easy-transform-metadata.log
 echo "OK"
