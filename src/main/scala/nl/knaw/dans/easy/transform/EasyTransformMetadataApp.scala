@@ -20,7 +20,6 @@ import java.net.URI
 
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
 import javax.xml.transform.{ Source, Transformer }
-import nl.knaw.dans.easy.transform.AccessRights.AccessRights
 import nl.knaw.dans.easy.transform.bagstore.BagStore
 
 import scala.util.Try
