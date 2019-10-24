@@ -40,7 +40,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     for {
       datasetXml <- fetchDatasetXml(bagId)
       filesXml <- fetchFilesXml(bagId)
-      upgradedFilesXml <- enrichFilesXml(filesXml, AccessRights.withName((datasetXml \ "accessRights").head.text), configuration.downloadURL)
+      upgradedFilesXml <- enrichFilesXml(filesXml, datasetXml, configuration.downloadURL)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
       resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
       _ <- outputXml(resultXml, output)
@@ -55,8 +55,8 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     bagStore.loadFilesXml(bagId)
   }
 
-  private def enrichFilesXml(xml: Node, accessRights: AccessRights, downloadUrl: URI): Try[Node] = Try {
-    xmlTransformation.enrichFilesXml(xml, accessRights, downloadUrl)
+  private def enrichFilesXml(filesXml: Node, datasetXml: Node, downloadUrl: URI): Try[Node] = Try {
+    xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
   }
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
