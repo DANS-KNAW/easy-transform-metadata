@@ -34,7 +34,6 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   // TODO implement
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
-
   def processDataset(bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(bagId)
