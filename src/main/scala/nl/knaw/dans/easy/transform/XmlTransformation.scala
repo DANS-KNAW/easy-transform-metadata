@@ -47,7 +47,7 @@ class XmlTransformation() {
     if (visibleToRights.isEmpty)
       enriched = enriched.copy(child = enriched.child ++ getVisibleToRightsElement())
 
-    replaceFilePathWithDownloadUrl(enriched, downloadUrl)
+    addDownloadUrl(enriched, downloadUrl)
   }
 
   private def getAccessibleToRightsElement(datasetXml: Node): Elem = {
@@ -59,8 +59,8 @@ class XmlTransformation() {
     <visibleToRights>ANONYMOUS</visibleToRights>
   }
 
-  private def replaceFilePathWithDownloadUrl(file: Elem, downloadUrl: URI) = {
+  private def addDownloadUrl(file: Elem, downloadUrl: URI) = {
     val downloadLocation = downloadUrl.toString.stripSuffix("/") concat "/"
-    file % Attribute(null, "filepath", downloadLocation + (file \ "@filepath").text, Null)
+    file.copy(child = file.child ++ <source>{downloadLocation + (file \ "@filepath").text}</source>)
   }
 }

@@ -40,14 +40,31 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     File(getClass.getResource("/metadata/").toURI).copyTo(metadataDir)
   }
 
-  "enrichFilesXml" should "leave the first file element as it was" in {
+  "enrichFilesXml" should "leave in the first file element accessibleToRights and visibleToRights elements as they were" in {
+    val filesXml = XML.loadFile(files_open)
+    val datasetXml = XML.loadFile(dataset_open)
+    val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
+    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
+    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
+  }
+
+  it should "add a new <source> element in file elements" in {
     val filesXml = XML.loadFile(files_open)
     val datasetXml = XML.loadFile(dataset_open)
     val origSizeFirstFileElement = (filesXml \ "file").head.child.size
     val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
-    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
-    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
-    firstFileElement.child.size shouldBe origSizeFirstFileElement
+    val sourceElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
+    sourceElement.child.size shouldBe 1
+    firstFileElement.child.size shouldBe origSizeFirstFileElement + 1
+  }
+
+  it should "give download path as value for the new <source> element in all file elements" in {
+    val filesXml = XML.loadFile(files_open)
+    val datasetXml = XML.loadFile(dataset_open)
+    val sourceElement_1 = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
+    val sourceElement_2 = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file" \ "source") (1)
+    sourceElement_1.text shouldBe "https://download/location/data/path/to/file.txt"
+    sourceElement_2.text shouldBe "https://download/location/data/quicksort.hs"
   }
 
   it should "add accessibleToRights element with value 'ANONYMOUS' to the second file element, when dataset accessRights is OPEN_ACCESS" in {
@@ -76,17 +93,6 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     val datasetXml = XML.loadFile(dataset_open)
     val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
     (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
-  }
-
-  it should "replace value of filepath attribute with a download path, for all file elements" in {
-    val filesXml = XML.loadFile(files_open)
-    val datasetXml = XML.loadFile(dataset_open)
-    val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
-    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
-    val filepathAttribute_1 = (firstFileElement \ "@filepath").text
-    val filepathAttribute_2 = (secondFileElement \ "@filepath").text
-    filepathAttribute_1 shouldBe "https://download/location/data/path/to/file.txt"
-    filepathAttribute_2 shouldBe "https://download/location/data/quicksort.hs"
   }
 
   it should "return as many nodes in the output xml as was in the original xml" in {
