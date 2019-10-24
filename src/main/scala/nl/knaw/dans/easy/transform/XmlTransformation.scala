@@ -15,20 +15,28 @@
  */
 package nl.knaw.dans.easy.transform
 
+import java.net.URI
+
 import nl.knaw.dans.easy.transform.AccessRights.AccessRights
 
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
-import scala.xml.{ Elem, Node }
+import scala.xml.{ Attribute, Elem, Node, Null }
 
 class XmlTransformation() {
 
   private val accessibleToRightsMap = Map(OPEN_ACCESS -> ANONYMOUS, REQUEST_PERMISSION -> RESTRICTED_REQUEST, NO_ACCESS -> "NONE")
 
-  def enrichFilesXml(xml: Node, accessRights: AccessRights): Node = {
-    EnrichFilesTransformer.enrichFiles(xml, accessRights)
+  def enrichFilesXml(xml: Node, accessRights: AccessRights, downloadUrl: URI): Node = {
+    val rule = new RewriteRule {
+      override def transform(n: Node): Seq[Node] = n match {
+        case elem: Elem if elem.label == "file" => enrichFileElement(elem, accessRights, downloadUrl)
+        case _ => n
+      }
+    }
+    new RuleTransformer(rule).transform(xml).head
   }
 
-  private def enrichFileElement(file: Elem, accessRights: AccessRights): Elem = {
+  private def enrichFileElement(file: Elem, accessRights: AccessRights, downloadUrl: URI): Elem = {
     val accessibleToRights = file \\ "accessibleToRights"
     val visibleToRights = file \\ "visibleToRights"
     var enriched = file
@@ -39,7 +47,7 @@ class XmlTransformation() {
     if (visibleToRights.isEmpty)
       enriched = enriched.copy(child = enriched.child ++ getVisibleToRightsElement())
 
-    enriched
+    replaceFilePathWithDownloadUrl(enriched, downloadUrl)
   }
 
   private def getAccessibleToRightsElement(accessRights: AccessRights): Elem = {
@@ -50,17 +58,8 @@ class XmlTransformation() {
     <visibleToRights>ANONYMOUS</visibleToRights>
   }
 
-  object EnrichFilesTransformer {
-
-    def enrichFiles(xml: Node, accessRights: AccessRights): Node = {
-      val rule = new RewriteRule {
-        override def transform(n: Node): Seq[Node] = n match {
-          case e: Elem if e.label == "file" => enrichFileElement(e, accessRights)
-          case _ => n
-        }
-      }
-      new RuleTransformer(rule).transform(xml).head
-    }
+  private def replaceFilePathWithDownloadUrl(file: Elem, downloadUrl: URI) = {
+    val downloadLocation = downloadUrl.toString.stripSuffix("/") concat "/"
+    file % Attribute(null, "filepath", downloadLocation + (file \ "@filepath").text, Null)
   }
-
 }

@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.easy.transform
 
+import java.net.URI
+
 import better.files.File
 import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import org.scalatest.BeforeAndAfterEach
@@ -25,6 +27,7 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val xmlTransformation = new XmlTransformation()
   private val files_1 = (metadataDir / "metadata_1/files.xml").toJava
+  private val downloadUrl = new URI("https://download/location/")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -33,40 +36,51 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
   }
 
   "enrichFilesXml" should "leave the first file element as it was, in metadata_1/files.xml" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val sizeFirstFileElement = (filesXml_1 \ "file").head.child.size
-    val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.OPEN_ACCESS) \ "file").head
+    val filesXml = XML.loadFile(files_1)
+    val origSizeFirstFileElement = (filesXml \ "file").head.child.size
+    val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.OPEN_ACCESS, downloadUrl) \ "file").head
     (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
     (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
-    firstFileElement.child.size shouldBe sizeFirstFileElement
+    firstFileElement.child.size shouldBe origSizeFirstFileElement
   }
 
-  it should "add accessibleToRights element with value 'ANONYMOUS' to the second file element, , when dataset accessRights is OPEN_ACCESS" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.OPEN_ACCESS) \ "file")(1)
+  it should "add accessibleToRights element with value 'ANONYMOUS' to the second file element, when dataset accessRights is OPEN_ACCESS" in {
+    val filesXml = XML.loadFile(files_1)
+    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.OPEN_ACCESS, downloadUrl) \ "file") (1)
     (secondFileElement \ "accessibleToRights").text shouldBe "ANONYMOUS"
   }
 
   it should "add accessibleToRights element with value 'RESTRICTED_REQUEST' to the second file element, when dataset accessRights is REQUEST_PERMISSION" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.REQUEST_PERMISSION) \ "file")(1)
+    val filesXml = XML.loadFile(files_1)
+    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.REQUEST_PERMISSION, downloadUrl) \ "file") (1)
     (secondFileElement \ "accessibleToRights").text shouldBe "RESTRICTED_REQUEST"
   }
 
   it should "add accessibleToRights element with value 'NONE' to the second file element, when dataset accessRights is NO_ACCESS" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.NO_ACCESS) \ "file")(1)
+    val filesXml = XML.loadFile(files_1)
+    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.NO_ACCESS, downloadUrl) \ "file") (1)
     (secondFileElement \ "accessibleToRights").text shouldBe "NONE"
   }
 
   it should "add visibleToRights element with value 'ANONYMOUS' to the second file element" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.REQUEST_PERMISSION) \ "file")(1)
+    val filesXml = XML.loadFile(files_1)
+    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.REQUEST_PERMISSION, downloadUrl) \ "file") (1)
     (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
   }
 
+  it should "replace value of filepath attribute with a download path, for all file elements" in {
+    val filesXml = XML.loadFile(files_1)
+    val firstFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.OPEN_ACCESS, downloadUrl) \ "file").head
+    val secondFileElement = (xmlTransformation.enrichFilesXml(filesXml, AccessRights.OPEN_ACCESS, downloadUrl) \ "file") (1)
+    val filepathAttribute_1 = (firstFileElement \ "@filepath").text
+    val filepathAttribute_2 = (secondFileElement \ "@filepath").text
+    filepathAttribute_1 shouldBe "https://download/location/data/path/to/file.txt"
+    filepathAttribute_2 shouldBe "https://download/location/data/quicksort.hs"
+  }
+
   it should "return as many nodes in the output xml as was in the original xml" in {
-    val filesXml_1 = XML.loadFile(files_1)
-    val result = xmlTransformation.enrichFilesXml(filesXml_1, AccessRights.OPEN_ACCESS).child.size shouldBe 5
+    val filesXml = XML.loadFile(files_1)
+    val origSize = filesXml.child.size
+    xmlTransformation.enrichFilesXml(filesXml, AccessRights.OPEN_ACCESS, downloadUrl).child.size shouldBe origSize
   }
 }
