@@ -66,31 +66,43 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     sourceElement_2.text shouldBe "https://download/location/data/quicksort.hs"
   }
 
-  it should "add accessibleToRights element with value 'ANONYMOUS' to the second file element, when dataset accessRights is OPEN_ACCESS" in {
+  it should "add visibleToRights element with value 'ANONYMOUS' to the second file element" in {
     val filesXml = XML.loadFile(files_open)
     val datasetXml = XML.loadFile(dataset_open)
     val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
+    (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
+  }
+
+  it should "add accessibleToRights element with value 'ANONYMOUS' to the second file element, when dataset accessRights is OPEN_ACCESS" in {
+    val filesXml = XML.loadFile(files_open)
+    val datasetXml = XML.loadFile(dataset_open)
+    val firstFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
+    val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
+    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
+    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
     (secondFileElement \ "accessibleToRights").text shouldBe "ANONYMOUS"
+    (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
   }
 
   it should "add accessibleToRights element with value 'RESTRICTED_REQUEST' to the second file element, when dataset accessRights is REQUEST_PERMISSION" in {
     val filesXml = XML.loadFile(files_request)
     val datasetXml = XML.loadFile(dataset_request)
+    val firstFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
     val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
+    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
+    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
     (secondFileElement \ "accessibleToRights").text shouldBe "RESTRICTED_REQUEST"
+    (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
   }
 
   it should "add accessibleToRights element with value 'NONE' to the second file element, when dataset accessRights is NO_ACCESS" in {
     val filesXml = XML.loadFile(files_no)
     val datasetXml = XML.loadFile(dataset_no)
+    val firstFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
     val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
+    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
+    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
     (secondFileElement \ "accessibleToRights").text shouldBe "NONE"
-  }
-
-  it should "add visibleToRights element with value 'ANONYMOUS' to the second file element" in {
-    val filesXml = XML.loadFile(files_open)
-    val datasetXml = XML.loadFile(dataset_open)
-    val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
     (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
   }
 
