@@ -22,7 +22,7 @@ import nl.knaw.dans.easy.transform.AccessRights.AccessRights
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
 import scala.xml.{ Attribute, Elem, Node, Null }
 
-class XmlTransformation() {
+object XmlTransformation {
 
   private val accessibleToRightsMap = Map(OPEN_ACCESS -> ANONYMOUS, REQUEST_PERMISSION -> RESTRICTED_REQUEST, NO_ACCESS -> "NONE")
 

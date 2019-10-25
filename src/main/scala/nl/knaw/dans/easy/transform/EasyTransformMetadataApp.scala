@@ -29,7 +29,6 @@ class EasyTransformMetadataApp(configuration: Configuration) {
 
   private lazy val prettyPrinter = new PrettyPrinter(160, 2)
   private val bagStore = new BagStore(configuration)
-  private val xmlTransformation = new XmlTransformation()
 
   // TODO implement
   //  (3) combine dataset.xml and files.xml into a single METS xml
@@ -54,7 +53,7 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   }
 
   private def enrichFilesXml(filesXml: Node, datasetXml: Node, downloadUrl: URI): Try[Node] = Try {
-    xmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
+    XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
   }
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
