@@ -26,11 +26,7 @@ import scala.xml.XML
 class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val files_open = (metadataDir / "metadata_OPEN_ACCESS/files.xml").toJava
-  private val files_request = (metadataDir / "metadata_REQUEST_PERMISSION/files.xml").toJava
-  private val files_no = (metadataDir / "metadata_NO_ACCESS/files.xml").toJava
   private val dataset_open = (metadataDir / "metadata_OPEN_ACCESS/dataset.xml").toJava
-  private val dataset_request = (metadataDir / "metadata_REQUEST_PERMISSION/dataset.xml").toJava
-  private val dataset_no = (metadataDir / "metadata_NO_ACCESS/dataset.xml").toJava
   private val downloadUrl = new URI("https://download/location/")
 
   override def beforeEach(): Unit = {
@@ -42,7 +38,8 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
   "makeWrappingXml" should "..." in {
     val filesXml = XML.loadFile(files_open)
     val datasetXml = XML.loadFile(dataset_open)
-    XmlWrapper.wrap(datasetXml,filesXml) shouldBe "a"
+    val result = XmlWrapper.wrap(datasetXml,filesXml)
+    result.child.size shouldBe 3
   }
 }
 
