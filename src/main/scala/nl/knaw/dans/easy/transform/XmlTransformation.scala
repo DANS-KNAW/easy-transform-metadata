@@ -20,11 +20,14 @@ import java.net.URI
 import nl.knaw.dans.easy.transform.AccessRights.AccessRights
 
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
-import scala.xml.{ Attribute, Elem, Node, Null }
+import scala.xml.{ Elem, Node }
 
 object XmlTransformation {
 
-  private val accessibleToRightsMap = Map(OPEN_ACCESS -> ANONYMOUS, REQUEST_PERMISSION -> RESTRICTED_REQUEST, NO_ACCESS -> "NONE")
+  private val accessibleToRightsMap = Map(
+    AccessRights.OPEN_ACCESS -> AccessibleToRights.ANONYMOUS,
+    AccessRights.REQUEST_PERMISSION -> AccessibleToRights.RESTRICTED_REQUEST,
+    AccessRights.NO_ACCESS -> AccessibleToRights.NONE)
 
   def enrichFilesXml(filesXml: Node, datasetXml: Node, downloadUrl: URI): Node = {
     val rule = new RewriteRule {
@@ -52,11 +55,11 @@ object XmlTransformation {
 
   private def getAccessibleToRightsElement(datasetXml: Node): Elem = {
     val accessRights: AccessRights = AccessRights.withName((datasetXml \\ "accessRights").text)
-    <accessibleToRights>{accessibleToRightsMap(accessRights.toString)}</accessibleToRights>
+    <accessibleToRights>{accessibleToRightsMap(accessRights)}</accessibleToRights>
   }
 
   private def getVisibleToRightsElement(): Elem = {
-    <visibleToRights>ANONYMOUS</visibleToRights>
+    <visibleToRights>{VisibleToRights.ANONYMOUS}</visibleToRights>
   }
 
   private def addDownloadUrl(file: Elem, downloadUrl: URI) = {
