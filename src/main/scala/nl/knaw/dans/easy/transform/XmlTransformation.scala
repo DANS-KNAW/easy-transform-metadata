@@ -51,7 +51,7 @@ object XmlTransformation {
   }
 
   private def getAccessibleToRightsElement(datasetXml: Node): Elem = {
-    val accessRights: AccessRights = AccessRights.withName((datasetXml \\ "accessRights").head.text)
+    val accessRights: AccessRights = AccessRights.withName((datasetXml \\ "accessRights").text)
     <accessibleToRights>{accessibleToRightsMap(accessRights.toString)}</accessibleToRights>
   }
 
@@ -60,7 +60,6 @@ object XmlTransformation {
   }
 
   private def addDownloadUrl(file: Elem, downloadUrl: URI) = {
-    val downloadLocation = downloadUrl.toString.stripSuffix("/") concat "/"
-    file.copy(child = file.child ++ <source>{downloadLocation + (file \ "@filepath").text}</source>)
+    file.copy(child = file.child ++ <dcterms:source>{downloadUrl.resolve((file \ "@filepath").text)}</dcterms:source>)
   }
 }
