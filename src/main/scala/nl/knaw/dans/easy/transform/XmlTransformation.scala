@@ -16,8 +16,10 @@
 package nl.knaw.dans.easy.transform
 
 import java.net.URI
+import java.nio.file.Paths
 
 import nl.knaw.dans.easy.transform.AccessRights.AccessRights
+import nl.knaw.dans.lib.encode.PathEncoding
 
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
 import scala.xml.{ Elem, Node }
@@ -63,6 +65,7 @@ object XmlTransformation {
   }
 
   private def addDownloadUrl(file: Elem, downloadUrl: URI) = {
-    file.copy(child = file.child ++ <dcterms:source>{downloadUrl.resolve((file \ "@filepath").text)}</dcterms:source>)
+    val escapedFilePath = Paths.get((file \ "@filepath").text).escapePath
+    file.copy(child = file.child ++ <dcterms:source>{downloadUrl.resolve(escapedFilePath)}</dcterms:source>)
   }
 }
