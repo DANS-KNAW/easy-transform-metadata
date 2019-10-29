@@ -15,9 +15,26 @@
  */
 package nl.knaw.dans.easy.transform.fixture
 
+import better.files.File
+import better.files.File.currentWorkingDirectory
 import org.scalatest._
 
 trait TestSupportFixture extends FlatSpec
   with Matchers
   with Inside
-  with OptionValues
+  with OptionValues {
+
+  lazy val testDir: File = {
+    val path = currentWorkingDirectory / s"target/test/${ getClass.getSimpleName }"
+    if (path.exists) path.delete()
+    path.createDirectories()
+    path
+  }
+
+  lazy protected val metadataDir = {
+    val path = testDir / "metadata/"
+    if (path.exists) path.delete()
+    path.createDirectories()
+    path
+  }
+}

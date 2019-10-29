@@ -16,6 +16,7 @@
 package nl.knaw.dans.easy.transform
 
 import java.io.{ StringReader, StringWriter, Writer }
+import java.net.URI
 
 import javax.xml.transform.stream.{ StreamResult, StreamSource }
 import javax.xml.transform.{ Source, Transformer }
@@ -30,17 +31,13 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   private val bagStore = new BagStore(configuration)
 
   // TODO implement
-  //  (2) enrich files.xml
-  //      (a) add <accessibleToRights> and <visibleToRights> if they're not provided; take dataset.xml - ddm:accessRight into account
-  //      (b) replace the value in 'filepath' with the download url
   //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
-
   def processDataset(bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(bagId)
       filesXml <- fetchFilesXml(bagId)
-      upgradedFilesXml <- enrichFilesXml(filesXml)
+      upgradedFilesXml <- enrichFilesXml(filesXml, datasetXml, configuration.downloadURL)
       metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
       resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
       _ <- outputXml(resultXml, output)
@@ -55,7 +52,9 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     bagStore.loadFilesXml(bagId)
   }
 
-  private def enrichFilesXml(xml: Node): Try[Node] = ???
+  private def enrichFilesXml(filesXml: Node, datasetXml: Node, downloadUrl: URI): Try[Node] = Try {
+    XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
+  }
 
   private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
 
