@@ -28,6 +28,7 @@ object XmlTransformation {
 
   private val accessibleToRightsMap = Map(
     AccessRights.OPEN_ACCESS -> AccessibleToRights.ANONYMOUS,
+    AccessRights.OPEN_ACCESS_FOR_REGISTERED_USERS -> AccessibleToRights.KNOWN,
     AccessRights.REQUEST_PERMISSION -> AccessibleToRights.RESTRICTED_REQUEST,
     AccessRights.NO_ACCESS -> AccessibleToRights.NONE)
 

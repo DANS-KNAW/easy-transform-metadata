@@ -24,21 +24,23 @@ package object transform {
   type BagId = UUID
 
   private val OPEN_ACCESS = "OPEN_ACCESS"
+  private val OPEN_ACCESS_FOR_REGISTERED_USERS = "OPEN_ACCESS_FOR_REGISTERED_USERS"
   private val REQUEST_PERMISSION = "REQUEST_PERMISSION"
   private val NO_ACCESS = "NO_ACCESS"
 
   private val ANONYMOUS = "ANONYMOUS"
+  private val KNOWN = "KNOWN"
   private val RESTRICTED_REQUEST = "RESTRICTED_REQUEST"
   private val NONE = "NONE"
 
   object AccessRights extends Enumeration {
     type AccessRights = Value
-    val OPEN_ACCESS, REQUEST_PERMISSION, NO_ACCESS = Value
+    val OPEN_ACCESS, OPEN_ACCESS_FOR_REGISTERED_USERS, REQUEST_PERMISSION, NO_ACCESS = Value
   }
 
   object AccessibleToRights extends Enumeration {
     type AccessibleToRights = Value
-    val ANONYMOUS, RESTRICTED_REQUEST, NONE = Value
+    val ANONYMOUS, KNOWN, RESTRICTED_REQUEST, NONE = Value
   }
 
   val VisibleToRights = AccessibleToRights
