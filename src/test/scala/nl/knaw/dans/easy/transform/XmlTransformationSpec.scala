@@ -26,9 +26,11 @@ import scala.xml.XML
 class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val files_open = (metadataDir / "metadata_OPEN_ACCESS/files.xml").toJava
+  private val files_open_registered = (metadataDir / "metadata_OPEN_ACCESS_FOR_REGISTERED_USERS/files.xml").toJava
   private val files_request = (metadataDir / "metadata_REQUEST_PERMISSION/files.xml").toJava
   private val files_no = (metadataDir / "metadata_NO_ACCESS/files.xml").toJava
   private val dataset_open = (metadataDir / "metadata_OPEN_ACCESS/dataset.xml").toJava
+  private val dataset_open_registered = (metadataDir / "metadata_OPEN_ACCESS_FOR_REGISTERED_USERS/dataset.xml").toJava
   private val dataset_request = (metadataDir / "metadata_REQUEST_PERMISSION/dataset.xml").toJava
   private val dataset_no = (metadataDir / "metadata_NO_ACCESS/dataset.xml").toJava
   private val downloadUrl = new URI("https://download/location/")
@@ -90,6 +92,17 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
     (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
     (secondFileElement \ "accessibleToRights").text shouldBe "ANONYMOUS"
+    (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
+  }
+
+  it should "add accessibleToRights element with value 'KNOWN' to the second file element, when dataset accessRights is OPEN_ACCESS_FOR_REGISTERED_USERS" in {
+    val filesXml = XML.loadFile(files_open_registered)
+    val datasetXml = XML.loadFile(dataset_open_registered)
+    val firstFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file").head
+    val secondFileElement = (XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl) \ "file") (1)
+    (firstFileElement \ "accessibleToRights").text shouldBe "NONE"
+    (firstFileElement \ "visibleToRights").text shouldBe "RESTRICTED_REQUEST"
+    (secondFileElement \ "accessibleToRights").text shouldBe "KNOWN"
     (secondFileElement \ "visibleToRights").text shouldBe "ANONYMOUS"
   }
 
