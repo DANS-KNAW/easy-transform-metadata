@@ -45,8 +45,7 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
     result.child should have size 2
     result \ "DDM" should have size 1
     result \ "files" should have size 1
-    result.child.head.label shouldBe "DDM"
-    result.child(1).label shouldBe "files"
+    result.child.map(_.label) should contain inOrderOnly ("DDM", "files")
   }
 
   it should "validate the wrapping XML against bagmetadata schema" in {
