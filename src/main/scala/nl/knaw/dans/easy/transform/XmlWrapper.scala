@@ -19,15 +19,7 @@ import scala.xml.Node
 
 object XmlWrapper {
 
-//  private val prolog = <?xml version="1.0" encoding="UTF-8"?>
-  private val xml =
-    <bag:bagmetadata
-        xmlns:bag="http://easy.dans.knaw.nl/bag/metadata/bagmetadata/"
-        xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
-        xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://easy.dans.knaw.nl/bag/metadata/bagmetadata/ https://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata.xsd/">
-    </bag:bagmetadata>
+  private val xml = <bagmetadata/>
 
   def wrap(datasetXml: Node, filesXml: Node): Node = {
     xml.copy(child = xml.child ++ datasetXml ++ filesXml)

@@ -15,19 +15,22 @@
  */
 package nl.knaw.dans.easy.transform
 
-import java.net.URI
+import java.io.StringReader
 
 import better.files.File
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.{ Schema, SchemaFactory, Validator }
 import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import org.scalatest.BeforeAndAfterEach
 
-import scala.xml.XML
+import scala.xml.{ Node, XML }
 
 class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
 
-  private val files_open = (metadataDir / "metadata_OPEN_ACCESS/files.xml").toJava
   private val dataset_open = (metadataDir / "metadata_OPEN_ACCESS/dataset.xml").toJava
-  private val downloadUrl = new URI("https://download/location/")
+  private val files_open = (metadataDir / "metadata_OPEN_ACCESS/files.xml").toJava
+  private val bagmetadataSchema = "src/main/resources/bagmetadata.xsd"
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -35,11 +38,30 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
     File(getClass.getResource("/metadata/").toURI).copyTo(metadataDir)
   }
 
-  "makeWrappingXml" should "..." in {
-    val filesXml = XML.loadFile(files_open)
+  "wrap" should "return dataset.xml and files.xml in a wrapping xml" in {
     val datasetXml = XML.loadFile(dataset_open)
-    val result = XmlWrapper.wrap(datasetXml,filesXml)
-    result.child.size shouldBe 3
+    val filesXml = XML.loadFile(files_open)
+    val result = XmlWrapper.wrap(datasetXml, filesXml)
+    result.child should have size 2
+    result \ "DDM" should have size 1
+    result \ "files" should have size 1
+    result.child.head.label shouldBe "DDM"
+    result.child(1).label shouldBe "files"
+  }
+
+  it should "validate the wrapping XML against bagmetadata schema" in {
+    val datasetXml = XML.loadFile(dataset_open)
+    val filesXml = XML.loadFile(files_open)
+    val result = XmlWrapper.wrap(datasetXml, filesXml)
+
+    validate(result, File(bagmetadataSchema))
+  }
+
+  private def validate(xmlFile: Node, xsdFile: File): Unit = {
+    val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+    val schema: Schema = schemaFactory.newSchema(xsdFile.toJava)
+    val validator: Validator = schema.newValidator()
+    val xml = new StreamSource(new StringReader(xmlFile.toString()))
+    validator.validate(xml)
   }
 }
-
