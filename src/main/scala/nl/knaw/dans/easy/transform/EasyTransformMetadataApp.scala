@@ -31,15 +31,14 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   private val bagStore = new BagStore(configuration)
 
   // TODO implement
-  //  (3) combine dataset.xml and files.xml into a single METS xml
   //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
   def processDataset(bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(bagId)
       filesXml <- fetchFilesXml(bagId)
       upgradedFilesXml <- enrichFilesXml(filesXml, datasetXml, configuration.downloadURL)
-      metsXml <- makeMetsXml(datasetXml, upgradedFilesXml)
-      resultXml <- transformer.fold(Try { metsXml })(transform(metsXml))
+      wrappedXml <- wrapXmls(datasetXml, upgradedFilesXml)
+      resultXml <- transformer.fold(Try { wrappedXml })(transform(wrappedXml))
       _ <- outputXml(resultXml, output)
     } yield ()
   }
@@ -56,7 +55,9 @@ class EasyTransformMetadataApp(configuration: Configuration) {
     XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
   }
 
-  private def makeMetsXml(datasetXml: Node, filesXml: Node): Try[Node] = ???
+  private def wrapXmls(datasetXml: Node, filesXml: Node): Try[Node] = Try {
+    XmlWrapper.wrap(datasetXml, filesXml)
+  }
 
   private def transform(xml: Node)(transformer: Transformer): Try[Node] = Try {
     val input: Source = new StreamSource(new StringReader(xml.toString()))
