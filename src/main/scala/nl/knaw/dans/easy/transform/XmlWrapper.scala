@@ -20,7 +20,7 @@ import scala.xml.Node
 object XmlWrapper {
 
   def wrap(datasetXml: Node, filesXml: Node): Node = {
-    <bagmetadata xmlns:bagmetadata="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/">
+    <bagmetadata xmlns="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/">
       { datasetXml }
       { filesXml }
     </bagmetadata>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
   xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/">
