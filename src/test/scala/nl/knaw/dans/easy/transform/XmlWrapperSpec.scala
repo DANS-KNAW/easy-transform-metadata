@@ -24,7 +24,7 @@ import javax.xml.validation.{ Schema, SchemaFactory, Validator }
 import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import org.scalatest.BeforeAndAfterEach
 
-import scala.xml.{ Node, XML }
+import scala.xml.{ Node, Utility, XML }
 
 class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
 
@@ -41,11 +41,11 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
   "wrap" should "return dataset.xml and files.xml in a wrapping xml" in {
     val datasetXml = XML.loadFile(dataset_open)
     val filesXml = XML.loadFile(files_open)
-    val result = XmlWrapper.wrap(datasetXml, filesXml)
+   val result = Utility.trim(XmlWrapper.wrap(datasetXml, filesXml))
     result.child should have size 2
     result \ "DDM" should have size 1
     result \ "files" should have size 1
-    result.child.map(_.label) should contain inOrderOnly ("DDM", "files")
+    result.child.map(_.label) should contain inOrderOnly("DDM", "files")
   }
 
   it should "validate the wrapping XML against bagmetadata schema" in {

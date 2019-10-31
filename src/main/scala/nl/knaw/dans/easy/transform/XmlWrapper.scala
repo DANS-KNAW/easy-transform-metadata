@@ -19,9 +19,10 @@ import scala.xml.Node
 
 object XmlWrapper {
 
-  private val xml = <bagmetadata/>
-
   def wrap(datasetXml: Node, filesXml: Node): Node = {
-    xml.copy(child = xml.child ++ datasetXml ++ filesXml)
+    <bagmetadata xmlns="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/">
+      { datasetXml }
+      { filesXml }
+    </bagmetadata>
   }
 }
