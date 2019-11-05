@@ -41,7 +41,7 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
   "wrap" should "return dataset.xml and files.xml in a wrapping xml" in {
     val datasetXml = XML.loadFile(dataset_open)
     val filesXml = XML.loadFile(files_open)
-   val result = Utility.trim(XmlWrapper.wrap(datasetXml, filesXml))
+    val result = Utility.trim(XmlWrapper.wrap(datasetXml, filesXml))
     result.child should have size 2
     result \ "DDM" should have size 1
     result \ "files" should have size 1
