@@ -176,7 +176,20 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                        <configuration>
+                            <group>Applications/Archiving</group>
+                            <mappings combine.children="append">
+                                <mapping>
+                                    <directory>/var/opt/${dans-provider-name}/resource/${project.artifactId}</directory>
+                                    <sources>
+                                        <source>
+                                            <location>src/main/assembly/dist/res</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                     </plugin>
                 </plugins>
             </build>
         </profile>

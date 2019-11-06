@@ -31,10 +31,10 @@ import scala.xml.{ Node, PrettyPrinter, XML }
 class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val dataset_open = (metadataDir / "metadata_RICH/dataset.xml").toJava
-  private val files_open = (metadataDir / "metadata_OPEN_ACCESS/files.xml").toJava
+  private val files_open = (metadataDir / "metadata_RICH/files.xml").toJava
   private val bagmetadataSchema = "src/main/resources/bagmetadata.xsd"
   private val downloadUrl = new URI("https://download/location/")
-  private val ddmToCarareXSL = "src/main/resources/ddm_carare.xsl"
+  private val ddmToCarareXSL = "src/main/assembly/dist/res/ddm_carare.xsl"
   private val carareXSD = "src/main/resources/carare-v2.0.6.xsd"
 
   val factory: TransformerFactory = TransformerFactory.newInstance()
