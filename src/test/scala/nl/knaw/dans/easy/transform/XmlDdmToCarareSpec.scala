@@ -57,19 +57,11 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     val wrappedXml = XmlWrapper.wrap(datasetXml, upgradedFilesXml)
     val input: Source = new StreamSource(new StringReader(wrappedXml.toString()))
     transformer.transform(input, new StreamResult(output))
-    val strResult = output.toString
-    Console.err.println(strResult)
-    validate(XML.loadString(strResult), File(carareXSD))
+    val result = XML.loadString(output.toString)
+//    Console.err.println(prettyPrinter.format(result))
+    validate(result, File(carareXSD))
   }
 
-  //  it should "validate the wrapping XML against bagmetadata schema" in {
-  //    val datasetXml = XML.loadFile(dataset_open)
-  //    val filesXml = XML.loadFile(files_open)
-  //    val result = XmlWrapper.wrap(datasetXml, filesXml)
-  //
-  //    validate(result, File(bagmetadataSchema))
-  //  }
-  //
   private def validate(xmlFile: Node, xsdFile: File): Unit = {
     val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
     val schema: Schema = schemaFactory.newSchema(xsdFile.toJava)
