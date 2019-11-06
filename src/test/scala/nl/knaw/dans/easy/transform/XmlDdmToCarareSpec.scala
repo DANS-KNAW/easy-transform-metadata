@@ -58,7 +58,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     val input: Source = new StreamSource(new StringReader(wrappedXml.toString()))
     transformer.transform(input, new StreamResult(output))
     val result = XML.loadString(output.toString)
-//    Console.err.println(prettyPrinter.format(result))
+    Console.err.println(prettyPrinter.format(result))
     validate(result, File(carareXSD))
   }
 

@@ -41,24 +41,31 @@
     </xsl:template>
     <!-- ==================================================== -->
 
-     <!-- ==================================================== -->
+    <xsl:template match="ddm:profile/dc:title[not(@xml:lang)]">
+        <xsl:element name="title">
+            <xsl:value-of select="."/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="ddm:profile/dc:title[@xml:lang] | ddm:profile/dcterms:title | ddm:profile/dcterms:alternative">
+        <xsl:element name="title">
+            <xsl:if test="./@xml:lang">
+                <xsl:attribute name="lang">
+                    <xsl:value-of select="./@xml:lang" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:value-of select="."/>
+        </xsl:element>
+    </xsl:template>
+
+
+    <!-- ==================================================== -->
     <!-- Carare collectionInformation -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:DDM">
         <xsl:element name="collectionInformation">
 
-            <!-- title -->
-            <xsl:for-each select="ddm:profile/dc:title[@xml:lang]" >
-                <xsl:variable name="lang" select="./@xml:lang"/>
-                <title lang="{$lang}">
-                    <xsl:value-of select="."/>
-                </title>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:profile/dc:title[not(@xml:lang)]" >
-                <title>
-                    <xsl:value-of select="."/>
-                </title>
-            </xsl:for-each>
+            <xsl:apply-templates select="ddm:profile/dc:title| ddm:profile/dcterms:title | ddm:profile/dcterms:alternative"/>
 
             <!-- contacts -->
             <contacts>
@@ -88,44 +95,20 @@
                     <xsl:value-of select="ddm:profile/ddm:accessRights"/>
                 </accessRights>
                 <xsl:if test="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]">
-                    <license>
+                    <licence>
                         <xsl:value-of select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
-                    </license>
+                    </licence>
                 </xsl:if>
             </rights>
 
             <!-- language -->
-            <xsl:for-each select="ddm:dcmiMetadata/dcterms:language[@xsi:type]" >
-                <xsl:variable name="type" select="./@xml:lang"/>
-                <language lang="{$type}">
-                    <xsl:value-of select="."/>
-                </language>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:dcmiMetadata/dcterms:language[not(@xsi:type)]" >
-                <language>
-                    <xsl:value-of select="."/>
-                </language>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:dcmiMetadata/dc:language[@xsi:type]" >
-                <xsl:variable name="type" select="./@xml:lang"/>
-                <language lang="{$type}">
-                    <xsl:value-of select="."/>
-                </language>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:dcmiMetadata/dc:language[not(@xsi:type)]" >
-                <language>
-                    <xsl:value-of select="."/>
-                </language>
-            </xsl:for-each>
+            <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:language | ddm:dcmiMetadata/dc:language"/>
 
             <!-- statements -->
             <xsl:for-each select="ddm:profile/dc:description">
                 <statement><xsl:value-of select="."/></statement>
             </xsl:for-each>
-            <xsl:for-each select="ddm:profile/dc:creator">
-                <statement>Creator: <xsl:value-of select="."/></statement>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:profile/dcx-dai:creatorDetails">
+            <xsl:for-each select="ddm:profile/dc:creator | ddm:profile/dcx-dai:creatorDetails">
                 <statement>Creator: <xsl:value-of select="normalize-space(.)"/></statement>
             </xsl:for-each>
             <xsl:for-each select="ddm:profile/ddm:audience">
@@ -169,51 +152,65 @@
                          </locationSet>
                     </spatial>
                 </xsl:for-each>
-                <xsl:for-each select="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos" >
-                    <xsl:variable name="coordinates" select="normalize-space(.)"/>
-                    <xsl:variable name="pos" select="str:tokenize($coordinates, ' ')"/>
-                    <spatial>
-                        <geometry>
-                            <quickpoint>
-                                <xsl:if test="$pos[1]">
-                                    <x><xsl:value-of select="$pos[1]"/></x>
-                                </xsl:if>
-                                <xsl:if test="$pos[2]">
-                                    <y><xsl:value-of select="$pos[2]"/></y>
-                                </xsl:if>
-                                <xsl:if test="$pos[3]">
-                                    <z><xsl:value-of select="$pos[3]"/></z>
-                                </xsl:if>
-                            </quickpoint>
-                        </geometry>
-                    </spatial>
-                </xsl:for-each>
-                <xsl:for-each select="ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos" >
-                    <xsl:if test=". != ''">
-                        <xsl:variable name="coordinates" select="normalize-space(.)"/>
-                        <xsl:variable name="pos" select="str:tokenize($coordinates, ' ')"/>
-                        <spatial>
-                            <geometry>
-                                <quickpoint>
-                                    <xsl:if test="$pos[1]">
-                                        <x><xsl:value-of select="$pos[1]"/></x>
-                                    </xsl:if>
-                                    <xsl:if test="$pos[2]">
-                                        <y><xsl:value-of select="$pos[2]"/></y>
-                                    </xsl:if>
-                                    <xsl:if test="$pos[3]">
-                                        <z><xsl:value-of select="$pos[3]"/></z>
-                                    </xsl:if>
-                                </quickpoint>
-                            </geometry>
-                        </spatial>
-                    </xsl:if>
-                </xsl:for-each>
+                <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos
+                                           | ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos"/>
             </coverage>
 
         </xsl:element>
     </xsl:template>
     <!-- ==================================================== -->
+
+    <!-- ==================================================== -->
+    <!-- title -->
+    <!-- ==================================================== -->
+    <xsl:template match="ddm:profile/dc:title[@xml:lang] | ddm:profile/dcterms:title | ddm:profile/dcterms:alternative">
+        <xsl:element name="title">
+            <xsl:if test="./@xml:lang">
+                <xsl:attribute name="lang">
+                    <xsl:value-of select="./@xml:lang" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:value-of select="."/>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!-- language -->
+    <!-- ==================================================== -->
+    <xsl:template match="ddm:dcmiMetadata/dcterms:language | ddm:dcmiMetadata/dc:language">
+        <xsl:element name="language">
+            <xsl:if test="./@xsi:type">
+                <xsl:attribute name="lang">
+                    <xsl:value-of select="./@xsi:type" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:value-of select="."/>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!-- coverage / spatial / geometry / quickpoint -->
+    <!-- ==================================================== -->
+    <xsl:template match="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos
+                       | ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos">
+        <xsl:variable name="coordinates" select="normalize-space(.)"/>
+        <xsl:variable name="pos" select="str:tokenize($coordinates, ' ')"/>
+        <xsl:element name="spatial">
+            <geometry>
+                <quickpoint>
+                    <xsl:if test="$pos[1]">
+                        <x><xsl:value-of select="$pos[1]"/></x>
+                    </xsl:if>
+                    <xsl:if test="$pos[2]">
+                        <y><xsl:value-of select="$pos[2]"/></y>
+                    </xsl:if>
+                    <xsl:if test="$pos[3]">
+                        <z><xsl:value-of select="$pos[3]"/></z>
+                    </xsl:if>
+                </quickpoint>
+            </geometry>
+        </xsl:element>
+    </xsl:template>
 
     <!-- ==================================================== -->
     <!-- Carare digitalResource --> -->

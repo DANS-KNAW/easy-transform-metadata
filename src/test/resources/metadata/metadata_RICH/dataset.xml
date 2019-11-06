@@ -52,8 +52,13 @@
         -->
 
         <!-- One or more dc:title, dct:title, dct:alternative -->
-        <dc:title xml:lang="en">Title of the dataset 6</dc:title>
-        <dc:title xml:lang="nl">Titel van de dataset</dc:title>
+        <dc:title xml:lang="en">Title from dc:title with language attribute 'en'</dc:title>
+        <dc:title xml:lang="nl">Title from dc:title with language attribute 'nl'</dc:title>
+        <dc:title>Title from dc:title </dc:title>
+        <dct:title xml:lang="nl">Title from dct:title with language attribute</dct:title>
+        <dct:title>Title from dct:title</dct:title>
+        <dct:alternative xml:lang="nl">Title from dct:alternative with language attribute</dct:alternative>
+        <dct:alternative>Title from dct:alternative</dct:alternative>
 
         <!-- One or more dc:description, dct:description, dct:abstract, dct:tableOfContents -->
         <dc:description xml:lang="la">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dc:description>
