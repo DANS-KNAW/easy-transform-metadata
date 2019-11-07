@@ -62,6 +62,9 @@
 
         <!-- One or more dc:description, dct:description, dct:abstract, dct:tableOfContents -->
         <dc:description xml:lang="la">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</dc:description>
+        <dct:description xml:lang="la">Ipsum dolor sit amet, consectetur adipiscing elit.</dct:description>
+        <dct:abstract xml:lang="la">Dolor sit amet, consectetur adipiscing elit.</dct:abstract>
+        <dct:tableOfContents xml:lang="la">Sit amet, consectetur adipiscing elit.</dct:tableOfContents>
 
         <!-- One or more dc:creator, dct:creator, dcx-dai:creator, dcx-dai:creatorDetails.
         Use elements from substitution groups that convey detailed information, when possible. -->
@@ -189,8 +192,9 @@
         <!-- ================================================================ authors -->
 
         <dcterms:rightsHolder>Houder van rechten</dcterms:rightsHolder>
-        <dcx-dai:creator DAI='info:eu-repo/dai/nl/9876543216'><!-- empty: does not show up --></dcx-dai:creator>
+        <dcx-dai:creator DAI='info:eu-repo/dai/nl/9876543216'>aaa</dcx-dai:creator>
         <dc:creator>maker</dc:creator>
+        <dct:creator>tekijä</dct:creator>
         <dc:contributor>bijdrager</dc:contributor>
         <dcterms:creator>maker term</dcterms:creator>
         <dcterms:contributor>bijdrager term</dcterms:contributor>

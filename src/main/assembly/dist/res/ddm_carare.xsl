@@ -28,6 +28,8 @@
     <!-- ==================================================== -->
 
     <!-- ==================================================== -->
+    <!--                    Carare wrap                       -->
+    <!-- ==================================================== -->
     <xsl:template match="bagmetadata:bagmetadata">
         <xsl:element name="carareWrap">
             <xsl:element name="carare">
@@ -41,129 +43,40 @@
     </xsl:template>
     <!-- ==================================================== -->
 
-    <xsl:template match="ddm:profile/dc:title[not(@xml:lang)]">
-        <xsl:element name="title">
-            <xsl:value-of select="."/>
-        </xsl:element>
-    </xsl:template>
-
-    <xsl:template match="ddm:profile/dc:title[@xml:lang] | ddm:profile/dcterms:title | ddm:profile/dcterms:alternative">
-        <xsl:element name="title">
-            <xsl:if test="./@xml:lang">
-                <xsl:attribute name="lang">
-                    <xsl:value-of select="./@xml:lang" />
-                </xsl:attribute>
-            </xsl:if>
-            <xsl:value-of select="."/>
-        </xsl:element>
-    </xsl:template>
-
-
     <!-- ==================================================== -->
-    <!-- Carare collectionInformation -->
+    <!--            Carare collectionInformation              -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:DDM">
         <xsl:element name="collectionInformation">
 
+            <!-- title -->
             <xsl:apply-templates select="ddm:profile/dc:title| ddm:profile/dcterms:title | ddm:profile/dcterms:alternative"/>
 
             <!-- contacts -->
-            <contacts>
-                <name>Drs. Hella Hollander</name>
-                <role lang="en">data archivist archaeology</role>
-                <organization>Data Archiving and Networked Services (DANS)</organization>
-                <address>
-                    <numberInRoad>51</numberInRoad>
-                    <roadName>Anna van Saksenlaan</roadName>
-                    <townOrCity>The Hague</townOrCity>
-                    <postcodeOrZipcode>2593 HW</postcodeOrZipcode>
-                    <country>the Netherlands</country>
-                </address>
-                <phone>+31 70 3494450</phone>
-                <email>hella.hollander@dans.knaw.nl</email>
-                <email>info@dans.knaw.nl</email>
-            </contacts>
+            <xsl:call-template name="contacts"/>
 
             <!-- rights -->
-            <rights>
-                <xsl:if test="ddm:dcmiMetadata/dcterms:rightsHolder">
-                    <copyrightCreditLine>
-                        <xsl:value-of select="ddm:dcmiMetadata/dcterms:rightsHolder"/>
-                    </copyrightCreditLine>
-                </xsl:if>
-                <accessRights>
-                    <xsl:value-of select="ddm:profile/ddm:accessRights"/>
-                </accessRights>
-                <xsl:if test="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]">
-                    <licence>
-                        <xsl:value-of select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
-                    </licence>
-                </xsl:if>
-            </rights>
+            <xsl:call-template name="rights"/>
 
             <!-- language -->
             <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:language | ddm:dcmiMetadata/dc:language"/>
 
-            <!-- statements -->
-            <xsl:for-each select="ddm:profile/dc:description">
-                <statement><xsl:value-of select="."/></statement>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:profile/dc:creator | ddm:profile/dcx-dai:creatorDetails">
-                <statement>Creator: <xsl:value-of select="normalize-space(.)"/></statement>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:profile/ddm:audience">
-                <statement>Audience: <xsl:value-of select="."/></statement>
-            </xsl:for-each>
-            <xsl:for-each select="ddm:profile/ddm:available">
-                <statement>Available: <xsl:value-of select="."/></statement>
-            </xsl:for-each>
+            <!-- statement -->
+            <xsl:call-template name="statement"/>
 
             <!-- creation -->
-            <creation>
-                <createdOn>
-                    <xsl:value-of select="ddm:profile/ddm:created"/>
-                </createdOn>
-            </creation>
+            <xsl:call-template name="creation"/>
 
             <!-- coverage -->
-            <coverage>
-                <!-- coverage / temporal -->
-                <xsl:for-each select="ddm:dcmiMetadata/dc:coverage[@xsi:type=&apos;dct:Period&apos;]" >
-                    <temporal>
-                        <displayDate><xsl:value-of select="."/></displayDate>
-                    </temporal>
-                </xsl:for-each>
-                <xsl:for-each select="ddm:dcmiMetadata/dcterms:temporal[not(@xsi:type=&apos;abr:ABRperiode&apos;)]" >
-                    <temporal>
-                        <displayDate><xsl:value-of select="."/></displayDate>
-                    </temporal>
-                </xsl:for-each>
-                <xsl:for-each select="ddm:dcmiMetadata/dcterms:temporal[@xsi:type=&apos;abr:ABRperiode&apos;]" >
-                    <temporal>
-                        <periodName><xsl:value-of select="."/></periodName>
-                    </temporal>
-                </xsl:for-each>
-
-                <!-- coverage / spatial -->
-                <xsl:for-each select="ddm:dcmiMetadata/dcterms:spatial[not(@xsi:type)]" >
-                    <spatial>
-                        <locationSet>
-                            <namedLocation><xsl:value-of select="."/></namedLocation>
-                         </locationSet>
-                    </spatial>
-                </xsl:for-each>
-                <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos
-                                           | ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos"/>
-            </coverage>
+            <xsl:call-template name="coverage"/>
 
         </xsl:element>
     </xsl:template>
-    <!-- ==================================================== -->
 
     <!-- ==================================================== -->
-    <!-- title -->
+    <!--                      title                           -->
     <!-- ==================================================== -->
-    <xsl:template match="ddm:profile/dc:title[@xml:lang] | ddm:profile/dcterms:title | ddm:profile/dcterms:alternative">
+    <xsl:template match="ddm:profile/dc:title | ddm:profile/dcterms:title | ddm:profile/dcterms:alternative">
         <xsl:element name="title">
             <xsl:if test="./@xml:lang">
                 <xsl:attribute name="lang">
@@ -175,7 +88,49 @@
     </xsl:template>
 
     <!-- ==================================================== -->
-    <!-- language -->
+    <!--                        contacts                        -->
+    <!-- ==================================================== -->
+    <xsl:template name="contacts">
+        <xsl:element name="contacts">
+            <name>Drs. Hella Hollander</name>
+            <role lang="en">data archivist archaeology</role>
+            <organization>Data Archiving and Networked Services (DANS)</organization>
+            <address>
+                <numberInRoad>51</numberInRoad>
+                <roadName>Anna van Saksenlaan</roadName>
+                <townOrCity>The Hague</townOrCity>
+                <postcodeOrZipcode>2593 HW</postcodeOrZipcode>
+                <country>the Netherlands</country>
+            </address>
+            <phone>+31 70 3494450</phone>
+            <email>hella.hollander@dans.knaw.nl</email>
+            <email>info@dans.knaw.nl</email>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!--                        rights                        -->
+    <!-- ==================================================== -->
+    <xsl:template name="rights">
+        <xsl:element name="rights">
+            <xsl:if test="ddm:dcmiMetadata/dcterms:rightsHolder">
+                <copyrightCreditLine>
+                    <xsl:value-of select="ddm:dcmiMetadata/dcterms:rightsHolder"/>
+                </copyrightCreditLine>
+            </xsl:if>
+            <accessRights>
+                <xsl:value-of select="ddm:profile/ddm:accessRights"/>
+            </accessRights>
+            <xsl:if test="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]">
+                <licence>
+                    <xsl:value-of select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
+                </licence>
+            </xsl:if>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!--                       language                       -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:dcmiMetadata/dcterms:language | ddm:dcmiMetadata/dc:language">
         <xsl:element name="language">
@@ -189,7 +144,72 @@
     </xsl:template>
 
     <!-- ==================================================== -->
-    <!-- coverage / spatial / geometry / quickpoint -->
+    <!--                      statement                       -->
+    <!-- ==================================================== -->
+    <xsl:template name="statement">
+        <xsl:for-each select="ddm:profile/dc:description | ddm:profile/dcterms:description | ddm:profile/dcterms:abstract| ddm:profile/dcterms:tableOfContents">
+            <statement><xsl:value-of select="."/></statement>
+        </xsl:for-each>
+        <xsl:for-each select="ddm:profile/dc:creator | ddm:profile/dcterms:creator | ddm:profile/dcx-dai:creator | ddm:profile/dcx-dai:creatorDetails">
+            <statement>Creator: <xsl:value-of select="."/></statement>
+        </xsl:for-each>
+        <xsl:for-each select="ddm:profile/ddm:audience">
+            <statement>Audience: <xsl:value-of select="."/></statement>
+        </xsl:for-each>
+        <xsl:for-each select="ddm:profile/ddm:available">
+            <statement>Available: <xsl:value-of select="."/></statement>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!--                      creation                        -->
+    <!-- ==================================================== -->
+    <xsl:template name="creation">
+        <xsl:element name="creation">
+            <xsl:element name="createdOn">
+                <xsl:value-of select="ddm:profile/ddm:created"/>
+            </xsl:element>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
+    <!--                        coverage                      -->
+    <!-- ==================================================== -->
+    <xsl:template name="coverage">
+        <xsl:element name="coverage">
+            <!-- coverage / temporal -->
+            <xsl:for-each select="ddm:dcmiMetadata/dc:coverage[@xsi:type=&apos;dct:Period&apos;]" >
+                <temporal>
+                    <displayDate><xsl:value-of select="."/></displayDate>
+                </temporal>
+            </xsl:for-each>
+            <xsl:for-each select="ddm:dcmiMetadata/dcterms:temporal[not(@xsi:type=&apos;abr:ABRperiode&apos;)]" >
+                <temporal>
+                    <displayDate><xsl:value-of select="."/></displayDate>
+                </temporal>
+            </xsl:for-each>
+            <xsl:for-each select="ddm:dcmiMetadata/dcterms:temporal[@xsi:type=&apos;abr:ABRperiode&apos;]" >
+                <temporal>
+                    <periodName><xsl:value-of select="."/></periodName>
+                </temporal>
+            </xsl:for-each>
+
+            <!-- coverage / spatial -->
+            <xsl:for-each select="ddm:dcmiMetadata/dcterms:spatial[not(@xsi:type)]" >
+                <spatial>
+                    <locationSet>
+                        <namedLocation><xsl:value-of select="."/></namedLocation>
+                    </locationSet>
+                </spatial>
+            </xsl:for-each>
+            <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos
+                                           | ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos"/>
+        </xsl:element>
+    </xsl:template>
+
+
+    <!-- ==================================================== -->
+    <!--      coverage / spatial / geometry / quickpoint      -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:dcmiMetadata/dcterms:spatial[@xsi:type=&apos;dcx-gml:SimpleGMLType&apos;]/gml:Point/gml:pos
                        | ddm:dcmiMetadata/dcx-gml:spatial/gml:Point/gml:pos">
@@ -213,7 +233,7 @@
     </xsl:template>
 
     <!-- ==================================================== -->
-    <!-- Carare digitalResource --> -->
+    <!--               Carare digitalResource                 -->
     <!-- ==================================================== -->
     <xsl:template match="files:files/files:file">
         <xsl:element name="digitalResource">
@@ -261,7 +281,5 @@
 
         </xsl:element>
     </xsl:template>
-    <!-- ==================================================== -->
-
 
 </xsl:stylesheet>

@@ -30,8 +30,8 @@ import scala.xml.{ Node, PrettyPrinter, XML }
 
 class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
 
-  private val dataset_open = (metadataDir / "metadata_RICH/dataset.xml").toJava
-  private val files_open = (metadataDir / "metadata_RICH/files.xml").toJava
+  private val dataset_open = (metadataDir / "metadata_PAN/dataset.xml").toJava
+  private val files_open = (metadataDir / "metadata_PAN/files.xml").toJava
   private val bagmetadataSchema = "src/main/resources/bagmetadata.xsd"
   private val downloadUrl = new URI("https://download/location/")
   private val ddmToCarareXSL = "src/main/assembly/dist/res/ddm_carare.xsl"
