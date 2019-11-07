@@ -30,11 +30,11 @@ import scala.xml.{ Node, PrettyPrinter, XML }
 
 class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
 
-  private val dataset_open = (metadataDir / "metadata_PAN/dataset.xml").toJava
-  private val files_open = (metadataDir / "metadata_PAN/files.xml").toJava
+  private val dataset = (metadataDir / "metadata_PAN/dataset.xml").toJava
+  private val file = (metadataDir / "metadata_PAN/files.xml").toJava
   private val bagmetadataSchema = "src/main/resources/bagmetadata.xsd"
   private val downloadUrl = new URI("https://download/location/")
-  private val ddmToCarareXSL = "src/main/assembly/dist/res/ddm_carare.xsl"
+  private val ddmToCarareXSL = "src/main/assembly/dist/res/pan_ddm_carare.xsl"
   private val carareXSD = "src/main/resources/carare-v2.0.6.xsd"
 
   val factory: TransformerFactory = TransformerFactory.newInstance()
@@ -49,8 +49,8 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
   }
 
   "transform" should "produce an XML-file in Carare format, and it should validate against Carare schema 2.0.6" in {
-    val datasetXml = XML.loadFile(dataset_open)
-    val filesXml = XML.loadFile(files_open)
+    val datasetXml = XML.loadFile(dataset)
+    val filesXml = XML.loadFile(file)
 
     val output = new StringWriter()
     val upgradedFilesXml = XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
