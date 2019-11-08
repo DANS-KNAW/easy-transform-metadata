@@ -3,9 +3,9 @@
         xmlns="http://www.carare.eu/carareSchema"
         xmlns:bagmetadata="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/"
         xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/"
+        xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
         xmlns:dc="http://purl.org/dc/elements/1.1/"
         xmlns:dcterms="http://purl.org/dc/terms/"
-        xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
         xmlns:dcx-dai="http://easy.dans.knaw.nl/schemas/dcx/dai/"
         xmlns:gml="http://www.opengis.net/gml"
         xmlns:dcx-gml="http://easy.dans.knaw.nl/schemas/dcx/gml/"
@@ -13,8 +13,7 @@
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:str="http://exslt.org/strings"
-        exclude-result-prefixes="xs xsi dai dc dcterms dcx-dai gml dcx-gml str bagmetadata ddm files"
-        version="2.0">
+        exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml str bagmetadata ddm files">
 
     <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type=&apos;id-type:DOI&apos;]"/>
     <xsl:variable name="doi-url" select="concat('https://doi.org/', $doi)"/>
@@ -41,10 +40,10 @@
                 </xsl:attribute>
 
                 <!-- collectionInformation -->
-<!--                <xsl:call-template name="collectionInformation"/>-->
+                <xsl:call-template name="collectionInformation"/>
 
                 <!-- heritageAssetIdentification -->
-<!--                <xsl:apply-templates select="ddm:DDM"/>-->
+                <xsl:apply-templates select="ddm:DDM"/>
 
                 <!-- digitalResource -->
                 <xsl:apply-templates select="files:files/files:file"/>
@@ -145,7 +144,9 @@
         <xsl:element name="recordInformation">
 
             <!-- id -->
-            <id><xsl:value-of select="$doi"/></id>
+            <id>
+                <xsl:value-of select="$doi"/>
+            </id>
 
             <!-- creation -->
             <creation>
@@ -198,7 +199,7 @@
     </xsl:template>
 
     <!-- ==================================================== -->
-    <!--                     description                       -->
+    <!--                     description                      -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:profile/dcterms:description">
         <xsl:element name="description">
@@ -359,22 +360,62 @@
     <!-- ==================================================== -->
     <xsl:template name="rights">
         <xsl:element name="rights">
+
             <xsl:if test="ddm:dcmiMetadata/dcterms:rightsHolder">
                 <copyrightCreditLine>
                     <xsl:value-of select="ddm:dcmiMetadata/dcterms:rightsHolder"/>
                 </copyrightCreditLine>
             </xsl:if>
+
             <accessRights>
                 <xsl:value-of select="ddm:profile/ddm:accessRights"/>
             </accessRights>
-            <xsl:if test="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]">
+
+            <xsl:variable name="license" select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
+            <xsl:if test="$license">
+
                 <licence>
-                    <xsl:value-of select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
+                    <xsl:value-of select="$license"/>
                 </licence>
+
+                <europeanaRights>
+                    <xsl:choose>
+                        <xsl:when test="contains($license, 'publicdomain/zero/1.0')">
+                            <xsl:value-of select="'The Creative Commons CC0 1.0 Universal Public Domain Dedication (CC0)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution (BY)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-sa/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, ShareAlike (BY-SA)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nc/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, Non-Commercial (BY-NC)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nc/3.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, Non-Commercial (BY-NC)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nd/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, No Derivatives (BY-ND)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nc-nd/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, Non-Commercial, No Derivatives (BY-NC-ND)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nc-sa/4.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, Non-Commercial, ShareAlike (BY-NC-SA)'"/>
+                        </xsl:when>
+                        <xsl:when test="contains($license, 'licenses/by-nc-sa/3.0')">
+                            <xsl:value-of select="'Creative Commons - Attribution, Non-Commercial, ShareAlike (BY-NC-SA)'"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="'Copyright Not Evaluated (CNE)'"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </europeanaRights>
             </xsl:if>
+
         </xsl:element>
     </xsl:template>
-
 
     <!-- ==================================================== -->
     <!--                      references                      -->
