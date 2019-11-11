@@ -180,10 +180,10 @@
                             <group>Applications/Archiving</group>
                             <mappings combine.children="append">
                                 <mapping>
-                                    <directory>/var/opt/${dans-provider-name}/resource/${project.artifactId}</directory>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/res</directory>
                                     <sources>
                                         <source>
-                                            <location>src/main/assembly/dist/res</location>
+                                            <location>src/main/resources</location>
                                         </source>
                                     </sources>
                                 </mapping>

@@ -33,7 +33,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
   private val dataset = (metadataDir / "metadata_PAN/dataset.xml").toJava
   private val file = (metadataDir / "metadata_PAN/files.xml").toJava
   private val downloadUrl = new URI("https://download/location/")
-  private val ddmToCarareXSL = "src/main/assembly/dist/res/pan_ddm_carare.xsl"
+  private val ddmToCarareXSL = "src/main/resources/pan_ddm_carare.xsl"
   private val carareXSD = "src/main/resources/carare-v2.0.6.xsd"
 
   val factory: TransformerFactory = TransformerFactory.newInstance()
