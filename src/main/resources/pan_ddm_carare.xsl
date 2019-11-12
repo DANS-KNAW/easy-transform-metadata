@@ -13,10 +13,12 @@
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:str="http://exslt.org/strings"
-        exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml str bagmetadata ddm files">
+        exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml str bagmetadata ddm files"
+        version="2.0">
 
     <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type=&apos;id-type:DOI&apos;]"/>
     <xsl:variable name="doi-url" select="concat('https://doi.org/', $doi)"/>
+    <xsl:variable name="OPEN_ACCESS_LICENSE" select="'http://creativecommons.org/licenses/by-nc-sa/4.0/'"/>
 
     <xsl:template match="/">
         <xsl:call-template name="metadata-root"/>
@@ -58,12 +60,7 @@
     <xsl:template name="collectionInformation">
         <xsl:element name="collectionInformation">
 
-            <title lang="en">
-                <xsl:text>e-archive Dutch Archaeology (DANS-EDNA)</xsl:text>
-            </title>
-            <title lang="nl" preferred="true">
-                <xsl:text>e-depot Nederlandse archeologie (DANS-EDNA)</xsl:text>
-            </title>
+            <title preferred="true" lang="en">Portable Antiquities of The Netherlands (DANS-PAN)</title>
             <source>DANS-KNAW</source>
             <contacts>
                 <name>Drs. Hella Hollander</name>
@@ -82,14 +79,12 @@
             </contacts>
             <rights>
                 <reproductionRights lang="en">
-                        <xsl:text>Allowed for research and educational use only. For personal reuse only, reproduction or redistribution in any form is not allowed, no commercial use allowed. Attribution compulsory</xsl:text>
-                 </reproductionRights>
-                <licence>http://www.dans.knaw.nl/en/content/data-archive/terms-and-conditions</licence>
+                    This collection is published under the following licence: Creative Commons - Attribution, Non-Commercial, ShareAlike (BY-NC-SA)
+                </reproductionRights>
+                <licence>http://creativecommons.org/licenses/by-nc-sa/4.0/</licence>
             </rights>
-            <language>nl</language>
-            <keywords lang="en">
-                <xsl:text>data archive; datasets; publications; archaeological research; Archaeology; the Netherlands</xsl:text>
-            </keywords>
+            <language>en</language>
+            <keywords lang="en">data archive; datasets; publications; archaeological research; Archaeology; the Netherlands</keywords>
             <coverage>
                 <spatial>
                     <locationSet>
@@ -116,6 +111,9 @@
             <!-- description -->
             <xsl:apply-templates select="ddm:profile/dcterms:description"/>
 
+            <!-- generalType -->
+            <xsl:call-template name="generalType"/>
+
             <!-- actors -->
             <xsl:apply-templates select="ddm:profile/dcx-dai:creatorDetails"/>
 
@@ -123,7 +121,7 @@
             <xsl:call-template name="characters"/>
 
             <!-- spatial -->
-            <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:spatial | ddm:dcmiMetadata/dcx-gml:spatial//gml:name"/>
+            <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:spatial"/>
 
             <!-- publicationStatement -->
             <xsl:apply-templates select="ddm:dcmiMetadata/dcterms:publisher"/>
@@ -133,6 +131,9 @@
 
             <!-- references -->
             <xsl:apply-templates select="ddm:dcmiMetadata/ddm:references"/>
+
+            <!-- hasRepresentation -->
+            <xsl:call-template name="hasRepresentation"/>
 
         </xsl:element>
     </xsl:template>
@@ -213,6 +214,15 @@
     </xsl:template>
 
     <!-- ==================================================== -->
+    <!--                    generalType                       -->
+    <!-- ==================================================== -->
+    <xsl:template name="generalType">
+        <generalType>
+            <xsl:value-of select="'Artefact'" />
+        </generalType>
+    </xsl:template>
+
+    <!-- ==================================================== -->
     <!--                      actors                          -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:profile/dcx-dai:creatorDetails">
@@ -285,7 +295,6 @@
         </xsl:element>
     </xsl:template>
 
-
     <!-- ==================================================== -->
     <!--                 heritageAssetType                    -->
     <!-- ==================================================== -->
@@ -296,6 +305,19 @@
                     <xsl:value-of select="./@xml:lang" />
                 </xsl:attribute>
             </xsl:if>
+            <xsl:if test="./@schemeURI">
+                <xsl:attribute name="namespace">
+                    <xsl:value-of select="./@schemeURI" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="./@valueURI">
+                <xsl:attribute name="termUID">
+                    <xsl:value-of select="./@valueURI" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:attribute name="term">
+                <xsl:value-of select="." />
+            </xsl:attribute>
             <xsl:value-of select="."/>
         </xsl:element>
     </xsl:template>
@@ -333,7 +355,7 @@
     <!-- ==================================================== -->
     <!--                      spatial                         -->
     <!-- ==================================================== -->
-    <xsl:template match="ddm:dcmiMetadata/dcterms:spatial | ddm:dcmiMetadata/dcx-gml:spatial//gml:name">
+    <xsl:template match="ddm:dcmiMetadata/dcterms:spatial">
         <xsl:element name="spatial">
             <xsl:element name="locationSet">
                 <xsl:element name="namedLocation">
@@ -444,6 +466,16 @@
 
 
     <!-- ==================================================== -->
+    <!--                  hasRepresentation                   -->
+    <!-- ==================================================== -->
+    <xsl:template name="hasRepresentation">
+        <xsl:variable name="filepath" select="/bagmetadata:bagmetadata/files:files/files:file[starts-with(@filepath, 'data/images')]/@filepath"/>
+        <xsl:element name="hasRepresentation">
+            <xsl:value-of select="concat($doi, substring($filepath, 5))"/>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ==================================================== -->
     <!--               Carare digitalResource                 -->
     <!-- ==================================================== -->
     <xsl:template match="files:files/files:file">
@@ -452,24 +484,33 @@
 
             <xsl:element name="digitalResource">
 
+                <xsl:variable name="fileName" select="str:tokenize(./@filepath, '/')[last()]"/>
+
                 <!-- recordInformation -->
                 <recordInformation>
-                    <id><xsl:value-of select="./@filepath"/></id>
+                    <id><xsl:value-of select="concat($doi, '/', $fileName)"/></id>
                 </recordInformation>
 
                 <!-- appellation -->
-                <xsl:variable name="pathParts" select="str:tokenize(./@filepath, '/')"/>
                 <appellation>
-                    <name lang="en"><xsl:value-of select="$pathParts[last()]"/></name>
-                    <id><xsl:value-of select="./@filepath"/></id>
+                    <name lang="en"><xsl:value-of select="$fileName"/></name>
+                    <id><xsl:value-of select="$fileName"/></id>
                 </appellation>
 
                 <!-- description -->
-                <xsl:for-each select="dcterms:description">
-                    <description lang="en">
-                        <xsl:value-of select="."/>
-                    </description>
-                </xsl:for-each>
+                <description lang="en">
+                    <xsl:choose>
+                        <xsl:when test="contains(./@filepath, 'thesaurus-nl')">
+                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in Dutch'"/>
+                        </xsl:when>
+                        <xsl:when test="contains(./@filepath, 'thesaurus-en')">
+                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in English'"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="'Technical description of the object in xml format'"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </description>
 
                 <!-- format -->
                 <format>
@@ -494,8 +535,11 @@
                 <!-- rights -->
                 <rights>
                     <accessRights>
-                        <xsl:value-of select="files:accessibleToRights"/>
+                        <xsl:value-of select="'Open Access'"/>
                     </accessRights>
+                    <licence>
+                        <xsl:value-of select="$OPEN_ACCESS_LICENSE"/>
+                    </licence>
                 </rights>
 
             </xsl:element>
