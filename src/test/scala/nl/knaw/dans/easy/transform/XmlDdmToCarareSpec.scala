@@ -103,7 +103,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     (heritageAssetIdentification \ "spatial" \ "locationSet" \ "namedLocation").head.text  shouldBe "Zaltbommel"
     (heritageAssetIdentification \ "publicationStatement" \ "publisher").head.text  shouldBe "DANS/KNAW"
     (heritageAssetIdentification \ "rights" \ "copyrightCreditLine").head.text  shouldBe "Vrije Universiteit Amsterdam"
-    (heritageAssetIdentification \ "rights" \ "accessRights").head.text  shouldBe "OPEN_ACCESS"
+    (heritageAssetIdentification \ "rights" \ "accessRights").head.text  shouldBe "Open Access"
     (heritageAssetIdentification \ "rights" \ "licence").head.text  shouldBe "http://creativecommons.org/licenses/by-nc-sa/4.0/"
     (heritageAssetIdentification \ "rights" \ "europeanaRights").head.text  shouldBe "Creative Commons - Attribution, Non-Commercial, ShareAlike (BY-NC-SA)"
     (heritageAssetIdentification \ "references" \ "appellation" \ "name").head.text  shouldBe "Portable Antiquities of The Netherlands"
