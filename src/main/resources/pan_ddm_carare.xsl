@@ -390,7 +390,21 @@
             </xsl:if>
 
             <accessRights>
-                <xsl:value-of select="ddm:profile/ddm:accessRights"/>
+                <xsl:variable name="accessRights" select="ddm:profile/ddm:accessRights"/>
+                <xsl:choose>
+                    <xsl:when test="$accessRights = 'OPEN_ACCESS'">
+                        <xsl:value-of select="'Open Access'"/>
+                    </xsl:when>
+                    <xsl:when test="$accessRights = 'OPEN_ACCESS_FOR_REGISTERED_USERS'">
+                        <xsl:value-of select="'Open Access For Registered Users'"/>
+                    </xsl:when>
+                    <xsl:when test="$accessRights = 'REQUEST_PERMISSION'">
+                        <xsl:value-of select="'Request Permission'"/>
+                    </xsl:when>
+                    <xsl:when test="$accessRights = 'NO_ACCESS'">
+                        <xsl:value-of select="'No Access'"/>
+                    </xsl:when>
+                </xsl:choose>
             </accessRights>
 
             <xsl:variable name="license" select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
