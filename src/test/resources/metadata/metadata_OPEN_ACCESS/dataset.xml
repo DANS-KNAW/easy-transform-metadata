@@ -13,9 +13,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/">
     <ddm:profile>
-        <dc:title>Dataset with files but no additional license</dc:title>
+        <dc:title xml:lang="en">Dataset with files but no additional license</dc:title>
+        <dc:title xml:lang="nl">Jooo</dc:title>
+        <dc:title>Jaaha</dc:title>
         <dc:description>A dataset with some files but no additional license</dc:description>
         <dc:creator>A Creator</dc:creator>
+        <dc:creator>Joku muu</dc:creator>
         <ddm:created>2015</ddm:created>
         <ddm:available>2016</ddm:available>
         <ddm:audience>D10000</ddm:audience>

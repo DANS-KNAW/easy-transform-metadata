@@ -30,8 +30,6 @@ class EasyTransformMetadataApp(configuration: Configuration) {
   private lazy val prettyPrinter = new PrettyPrinter(160, 2)
   private val bagStore = new BagStore(configuration)
 
-  // TODO implement
-  //  (4) if provided, run the transformer to convert the METS xml to the output format and write it to 'output'
   def processDataset(bagId: BagId, transformer: Option[Transformer], output: Writer): Try[Unit] = {
     for {
       datasetXml <- fetchDatasetXml(bagId)

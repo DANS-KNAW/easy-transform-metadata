@@ -57,7 +57,7 @@ object XmlTransformation {
   }
 
   private def getAccessibleToRightsElement(datasetXml: Node): Elem = {
-    val accessRights: AccessRights = AccessRights.withName((datasetXml \\ "accessRights").text)
+    val accessRights: AccessRights = AccessRights.withName((datasetXml \ "profile" \ "accessRights").text)
     <accessibleToRights>{accessibleToRightsMap(accessRights)}</accessibleToRights>
   }
 
