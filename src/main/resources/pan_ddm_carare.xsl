@@ -18,7 +18,6 @@
 
     <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type=&apos;id-type:DOI&apos;]"/>
     <xsl:variable name="doi-url" select="concat('https://doi.org/', $doi)"/>
-    <xsl:variable name="OPEN_ACCESS_LICENSE" select="'http://creativecommons.org/licenses/by-nc-sa/4.0/'"/>
 
     <xsl:template match="/">
         <xsl:call-template name="metadata-root"/>
@@ -88,7 +87,8 @@
             <coverage>
                 <spatial>
                     <locationSet>
-                        <geopoliticalArea lang="en">the Netherlands</geopoliticalArea>
+                        <!-- add (general area) or (undisclosed location) to tell Europeana not to show the location as a Point on a map -->
+                        <geopoliticalArea lang="en">the Netherlands (general area)</geopoliticalArea>
                     </locationSet>
                 </spatial>
             </coverage>
@@ -354,12 +354,13 @@
 
     <!-- ==================================================== -->
     <!--                      spatial                         -->
+    <!-- add (general area) or (undisclosed location) to tell Europeana not to show the location as a Point on a map -->
     <!-- ==================================================== -->
     <xsl:template match="ddm:dcmiMetadata/dcterms:spatial">
         <xsl:element name="spatial">
             <xsl:element name="locationSet">
                 <xsl:element name="namedLocation">
-                    <xsl:value-of select="."/>
+                    <xsl:value-of select="concat(., ' (undisclosed location)')"/>
                 </xsl:element>
             </xsl:element>
         </xsl:element>
@@ -395,15 +396,9 @@
                     <xsl:when test="$accessRights = 'OPEN_ACCESS'">
                         <xsl:value-of select="'Open Access'"/>
                     </xsl:when>
-                    <xsl:when test="$accessRights = 'OPEN_ACCESS_FOR_REGISTERED_USERS'">
-                        <xsl:value-of select="'Open Access For Registered Users'"/>
-                    </xsl:when>
-                    <xsl:when test="$accessRights = 'REQUEST_PERMISSION'">
-                        <xsl:value-of select="'Request Permission'"/>
-                    </xsl:when>
-                    <xsl:when test="$accessRights = 'NO_ACCESS'">
-                        <xsl:value-of select="'No Access'"/>
-                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="'Restricted Access'"/>
+                    </xsl:otherwise>
                 </xsl:choose>
             </accessRights>
 
@@ -520,9 +515,12 @@
                         <xsl:when test="contains(./@filepath, 'thesaurus-en')">
                             <xsl:value-of select="'Detailed information about the classification of this object in xml format, in English'"/>
                         </xsl:when>
-                        <xsl:otherwise>
+                        <xsl:when test="contains(./@filepath, 'object')">
                             <xsl:value-of select="'Technical description of the object in xml format'"/>
-                        </xsl:otherwise>
+                        </xsl:when>
+                        <xsl:when test="contains(./@filepath, 'images')">
+                            <xsl:value-of select="'Photo of the object'"/>
+                        </xsl:when>
                     </xsl:choose>
                 </description>
 
@@ -547,12 +545,13 @@
                 </isShownAt>
 
                 <!-- rights -->
+                <xsl:variable name="license" select="//bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
                 <rights>
                     <accessRights>
                         <xsl:value-of select="'Open Access'"/>
                     </accessRights>
                     <licence>
-                        <xsl:value-of select="$OPEN_ACCESS_LICENSE"/>
+                        <xsl:value-of select="$license"/>
                     </licence>
                 </rights>
 

@@ -76,7 +76,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     (collectionInformation \ "title").text  shouldBe "Portable Antiquities of The Netherlands (DANS-PAN)"
     (collectionInformation \ "contacts" \ "organization").text  shouldBe "Data Archiving and Networked Services (DANS)"
     (collectionInformation \ "rights" \ "licence").text  shouldBe "http://creativecommons.org/licenses/by-nc-sa/4.0/"
-    (collectionInformation \ "coverage" \ "spatial" \ "locationSet" \ "geopoliticalArea").text  shouldBe "the Netherlands"
+    (collectionInformation \ "coverage" \ "spatial" \ "locationSet" \ "geopoliticalArea").text  shouldBe "the Netherlands (general area)"
   }
 
   it should "produce a Carare XML-file with a correct heritageAssetIdentification contents" in {
@@ -100,7 +100,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     (heritageAssetIdentification \ "characters" \ "heritageAssetType").head.attribute("term").get.text  shouldBe "open plain arm ring with single knobbed terminals"
     (heritageAssetIdentification \ "characters" \ "temporal" \ "displayDate").head.text  shouldBe "Early Roman Period A"
     (heritageAssetIdentification \ "characters" \ "materials").head.text  shouldBe "metal"
-    (heritageAssetIdentification \ "spatial" \ "locationSet" \ "namedLocation").head.text  shouldBe "Zaltbommel"
+    (heritageAssetIdentification \ "spatial" \ "locationSet" \ "namedLocation").head.text  shouldBe "Zaltbommel (undisclosed location)"
     (heritageAssetIdentification \ "publicationStatement" \ "publisher").head.text  shouldBe "DANS/KNAW"
     (heritageAssetIdentification \ "rights" \ "copyrightCreditLine").head.text  shouldBe "Vrije Universiteit Amsterdam"
     (heritageAssetIdentification \ "rights" \ "accessRights").head.text  shouldBe "Open Access"
