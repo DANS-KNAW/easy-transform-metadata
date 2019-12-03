@@ -32,17 +32,17 @@ object XmlTransformation {
     AccessRights.REQUEST_PERMISSION -> AccessibleToRights.RESTRICTED_REQUEST,
     AccessRights.NO_ACCESS -> AccessibleToRights.NONE)
 
-  def enrichFilesXml(filesXml: Node, datasetXml: Node, downloadUrl: URI): Node = {
+  def enrichFilesXml(bagId: BagId, filesXml: Node, datasetXml: Node, downloadUrl: URI): Node = {
     val rule = new RewriteRule {
       override def transform(n: Node): Seq[Node] = n match {
-        case elem: Elem if elem.label == "file" => enrichFileElement(elem, datasetXml, downloadUrl)
+        case elem: Elem if elem.label == "file" => enrichFileElement(bagId, elem, datasetXml, downloadUrl)
         case _ => n
       }
     }
     new RuleTransformer(rule).transform(filesXml).head
   }
 
-  private def enrichFileElement(file: Elem, datasetXml: Node, downloadUrl: URI): Elem = {
+  private def enrichFileElement(bagId: BagId, file: Elem, datasetXml: Node, downloadUrl: URI): Elem = {
     val accessibleToRights = file \\ "accessibleToRights"
     val visibleToRights = file \\ "visibleToRights"
     var enriched = file
@@ -53,7 +53,7 @@ object XmlTransformation {
     if (visibleToRights.isEmpty)
       enriched = enriched.copy(child = enriched.child ++ getVisibleToRightsElement())
 
-    addDownloadUrl(enriched, downloadUrl)
+    addDownloadUrl(bagId, enriched, downloadUrl)
   }
 
   private def getAccessibleToRightsElement(datasetXml: Node): Elem = {
@@ -65,8 +65,8 @@ object XmlTransformation {
     <visibleToRights>{VisibleToRights.ANONYMOUS}</visibleToRights>
   }
 
-  private def addDownloadUrl(file: Elem, downloadUrl: URI) = {
+  private def addDownloadUrl(bagId: BagId, file: Elem, downloadUrl: URI) = {
     val escapedFilePath = Paths.get((file \ "@filepath").text).escapePath
-    file.copy(child = file.child ++ <dcterms:source>{downloadUrl.resolve(escapedFilePath)}</dcterms:source>)
+    file.copy(child = file.child ++ <dcterms:source>{downloadUrl.resolve(s"$bagId/$escapedFilePath")}</dcterms:source>)
   }
 }

@@ -63,6 +63,7 @@ object Command extends App with DebugEnhancedLogging {
     }
   }
 
+  Console.err.println("transforming started...")
   for (bagId <- singleBagId.map(Iterator(_)) getOrElse multipleBagIds;
        output <- fileOutput(bagId) getOrElse consoleOutput)
     process(bagId, output)
