@@ -17,6 +17,7 @@ package nl.knaw.dans.easy.transform
 
 import java.io.{ StringReader, StringWriter }
 import java.net.URI
+import java.util.UUID
 
 import better.files.File
 import javax.xml.XMLConstants
@@ -32,6 +33,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val dataset = metadataDir / "metadata_PAN/dataset.xml"
   private val file = metadataDir / "metadata_PAN/files.xml"
+  private val bagId = UUID.fromString("12345678-1234-1234-1234-1234567890123")
   private val downloadUrl = new URI("https://download/location/")
   private val ddmToCarareXSL = "src/main/resources/pan_ddm_carare.xsl"
   private val carareXSD = "src/main/resources/carare-v2.0.6.xsd"
@@ -120,8 +122,8 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     (digitalResource \ "appellation" \ "id").text  shouldBe "object.xml"
     (digitalResource \ "description").text  shouldBe "Technical description of the object in xml format"
     (digitalResource \ "format").text  shouldBe "text/xml"
-    (digitalResource \ "link").text  shouldBe "https://download/location/data/object%2Exml"
-    (digitalResource \ "object").text  shouldBe "https://download/location/data/object%2Exml"
+    (digitalResource \ "link").text  shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/object%2Exml"
+    (digitalResource \ "object").text  shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/object%2Exml"
     (digitalResource \ "isShownAt").text  shouldBe "https://doi.org/10.17026/dans-z74-c65r"
     (digitalResource \ "rights" \ "accessRights").text  shouldBe "Open Access"
     (digitalResource \ "rights" \ "licence").text  shouldBe "http://creativecommons.org/licenses/by-nc-sa/4.0/"
@@ -132,7 +134,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     val filesXml = XML.loadFile(file.toJava)
 
     val output = new StringWriter()
-    val upgradedFilesXml = XmlTransformation.enrichFilesXml(filesXml, datasetXml, downloadUrl)
+    val upgradedFilesXml = XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl)
     val wrappedXml = XmlWrapper.wrap(datasetXml, upgradedFilesXml)
     val input: Source = new StreamSource(new StringReader(wrappedXml.toString()))
     transformer.transform(input, new StreamResult(output))
