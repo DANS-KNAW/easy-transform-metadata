@@ -66,8 +66,8 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     val datasetXml = XML.loadFile(dataset_open)
     val sourceElement_1 = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
     val sourceElement_2 = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source") (1)
-    sourceElement_1.text shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/path/to/file%2Etxt"
-    sourceElement_2.text shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/quicksort%2Ehs"
+    sourceElement_1.text shouldBe s"https://download/location/$bagId/data/path/to/file%2Etxt"
+    sourceElement_2.text shouldBe s"https://download/location/$bagId/data/quicksort%2Ehs"
   }
 
   it should "construct the download path correctly also when there are spaces in the filepath" in {
@@ -75,8 +75,8 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     val datasetXml = XML.loadFile(dataset_request)
     val sourceElement_1 = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
     val sourceElement_2 = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source") (1)
-    sourceElement_1.text shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/path%20to%20file%2Etxt"
-    sourceElement_2.text shouldBe "https://download/location/12345678-1234-1234-1235-234567890123/data/quicksort%2Ehs"
+    sourceElement_1.text shouldBe s"https://download/location/$bagId/data/path%20to%20file%2Etxt"
+    sourceElement_2.text shouldBe s"https://download/location/$bagId/data/quicksort%2Ehs"
   }
 
   it should "add visibleToRights element with value 'ANONYMOUS' to the second file element" in {
