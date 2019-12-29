@@ -18,11 +18,16 @@ package nl.knaw.dans.easy.transform.fixture
 import better.files.File
 import better.files.File.currentWorkingDirectory
 import org.scalatest._
+import org.slf4j.bridge.SLF4JBridgeHandler
 
 trait TestSupportFixture extends FlatSpec
   with Matchers
   with Inside
   with OptionValues {
+
+  // disable logs from okhttp3.mockwebserver
+  SLF4JBridgeHandler.removeHandlersForRootLogger()
+  SLF4JBridgeHandler.install()
 
   lazy val testDir: File = {
     val path = currentWorkingDirectory / s"target/test/${ getClass.getSimpleName }"
