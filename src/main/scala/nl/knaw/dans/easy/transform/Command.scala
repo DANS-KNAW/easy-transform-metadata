@@ -16,12 +16,12 @@
 package nl.knaw.dans.easy.transform
 
 import java.io.{ OutputStreamWriter, Writer }
-import java.util.UUID
 
 import better.files.File
 import javax.xml.transform.stream.StreamSource
 import javax.xml.transform.{ Transformer, TransformerFactory }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.lib.string._
 import resource.{ ManagedResource, managed }
 
 import scala.util.{ Failure, Success }
@@ -35,7 +35,11 @@ object Command extends App with DebugEnhancedLogging {
 
   lazy val singleBagId: Option[BagId] = commandLine.bagId.toOption
   lazy val multipleBagIds: Iterator[BagId] = commandLine.list()
-    .lineIterator.map(UUID.fromString)
+    .lineIterator
+    .map(_.toUUID.toTry match {
+      case Success(uuid) => uuid
+      case Failure(e) => throw e
+    })
 
   lazy val transformer: Option[Transformer] = commandLine.transform.toOption
     .map(xsltFile => {
