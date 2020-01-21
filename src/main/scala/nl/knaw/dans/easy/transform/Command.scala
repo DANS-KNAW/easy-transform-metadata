@@ -36,7 +36,8 @@ object Command extends App with DebugEnhancedLogging {
   lazy val singleBagId: Option[BagId] = commandLine.bagId.toOption
   lazy val multipleBagIds: Iterator[BagId] = commandLine.list()
     .lineIterator
-    .map(_.toUUID.toTry match {
+    .map(_.toUUID
+       .toTry match {
       case Success(uuid) => uuid
       case Failure(e) => throw e
     })
