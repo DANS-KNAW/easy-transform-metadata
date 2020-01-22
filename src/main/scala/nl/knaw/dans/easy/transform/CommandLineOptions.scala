@@ -16,10 +16,10 @@
 package nl.knaw.dans.easy.transform
 
 import java.nio.file.Path
-import java.util.UUID
 
 import better.files.File
-import org.rogach.scallop.{ ScallopConf, ScallopOption, ValueConverter, singleArgConverter }
+import nl.knaw.dans.lib.string._
+import org.rogach.scallop.{ ScallopConf, ScallopOption, stringConverter }
 
 class CommandLineOptions(args: Array[String], configuration: Configuration) extends ScallopConf(args) {
   appendDefaultToDescription = true
@@ -43,7 +43,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
        |Options:
        |""".stripMargin)
 
-  private implicit val uuidParser: ValueConverter[UUID] = singleArgConverter(UUID.fromString)
+  private implicit val uuidConverter = stringConverter.flatMap(_.toUUID.fold(e => Left(e.getMessage), uuid => Right(Option(uuid))))
 
   val bagId: ScallopOption[BagId] = opt("bagId", short = 'b',
     descr = "The bag for which to transform the metadata")
