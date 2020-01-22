@@ -35,7 +35,7 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
   private val dataset_request = (metadataDir / "metadata_REQUEST_PERMISSION/dataset.xml").toJava
   private val dataset_no = (metadataDir / "metadata_NO_ACCESS/dataset.xml").toJava
   private val downloadUrl = new URI("https://download/location/")
-  private val bagId = UUID.fromString("12345678-1234-1234-1234-1234567890123")
+  private val bagId = UUID.fromString("12345678-1234-1234-1234-123456789012")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
