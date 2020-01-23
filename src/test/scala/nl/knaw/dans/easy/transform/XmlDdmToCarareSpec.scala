@@ -33,7 +33,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
 
   private val dataset = metadataDir / "metadata_PAN/dataset.xml"
   private val file = metadataDir / "metadata_PAN/files.xml"
-  private val bagId = UUID.fromString("12345678-1234-1234-1234-1234567890123")
+  private val bagId = UUID.fromString("12345678-1234-1234-1234-123456789012")
   private val downloadUrl = new URI("https://download/location/")
   private val ddmToCarareXSL = "src/main/resources/pan_ddm_carare.xsl"
   private val carareXSD = "src/main/resources/carare-v2.0.6.xsd"
