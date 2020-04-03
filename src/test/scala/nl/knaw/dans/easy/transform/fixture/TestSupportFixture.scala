@@ -17,10 +17,12 @@ package nl.knaw.dans.easy.transform.fixture
 
 import better.files.File
 import better.files.File.currentWorkingDirectory
-import org.scalatest._
+import org.scalatest.{ Inside, OptionValues }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.slf4j.bridge.SLF4JBridgeHandler
 
-trait TestSupportFixture extends FlatSpec
+trait TestSupportFixture extends AnyFlatSpec
   with Matchers
   with Inside
   with OptionValues {
