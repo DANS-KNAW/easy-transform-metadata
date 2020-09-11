@@ -27,6 +27,9 @@ trait TestSupportFixture extends AnyFlatSpec
   with Inside
   with OptionValues {
 
+  // Some (XSD) servers will deny requests if the User-Agent is set to the default value for Java
+  System.setProperty("http.agent", "Test")
+
   // disable logs from okhttp3.mockwebserver
   SLF4JBridgeHandler.removeHandlersForRootLogger()
   SLF4JBridgeHandler.install()
