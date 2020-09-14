@@ -19,7 +19,9 @@ import java.net.URI
 
 import better.files.File
 import better.files.File.root
+import nl.knaw.dans.easy.transform.Command.{ configuration, logger }
 import nl.knaw.dans.easy.transform.bagstore.BagStoreConfig
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.apache.commons.configuration.PropertiesConfiguration
 
 case class Configuration(version: String,
@@ -27,7 +29,7 @@ case class Configuration(version: String,
                          downloadURL: URI,
                         )
 
-object Configuration {
+object Configuration extends DebugEnhancedLogging {
 
   def apply(home: File): Configuration = {
     val cfgPath = Seq(
@@ -39,9 +41,13 @@ object Configuration {
       setDelimiterParsingDisabled(true)
       load((cfgPath / "application.properties").toJava)
     }
+    val version = (home / "bin" / "version").contentAsString.stripLineEnd
+    val agent = properties.getString("http.agent",s"easy-validate-dans-bag/$version")
+    logger.info(s"setting http.agent to $agent")
+    System.setProperty("http.agent", agent)
 
     new Configuration(
-      version = (home / "bin" / "version").contentAsString.stripLineEnd,
+      version,
       bagStoreConfig = BagStoreConfig(
         baseURL = new URI(properties.getString("bagstore.baseurl")),
         connectTimeout = properties.getLong("bagstore.timeout_ms.connect"),
