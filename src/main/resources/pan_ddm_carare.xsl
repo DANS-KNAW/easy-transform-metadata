@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet
-        xmlns="http://www.carare.eu/carareSchema"
-        xmlns:bagmetadata="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/"
-        xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/"
-        xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
-        xmlns:dc="http://purl.org/dc/elements/1.1/"
-        xmlns:dcterms="http://purl.org/dc/terms/"
-        xmlns:dcx-dai="http://easy.dans.knaw.nl/schemas/dcx/dai/"
-        xmlns:gml="http://www.opengis.net/gml"
-        xmlns:dcx-gml="http://easy.dans.knaw.nl/schemas/dcx/gml/"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:str="http://exslt.org/strings"
-        exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml str bagmetadata ddm files"
-        version="2.0">
+<xsl:stylesheet xmlns="http://www.carare.eu/carareSchema"
+                xmlns:bagmetadata="http://easy.dans.knaw.nl/schemas/bag/metadata/bagmetadata/"
+                xmlns:ddm="http://easy.dans.knaw.nl/schemas/md/ddm/"
+                xmlns:files="http://easy.dans.knaw.nl/schemas/bag/metadata/files/"
+                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:dcterms="http://purl.org/dc/terms/"
+                xmlns:dcx-dai="http://easy.dans.knaw.nl/schemas/dcx/dai/"
+                xmlns:gml="http://www.opengis.net/gml"
+                xmlns:dcx-gml="http://easy.dans.knaw.nl/schemas/dcx/gml/"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions"
+                exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml fn bagmetadata ddm files"
+                version="2.0">
 
-    <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type=&apos;id-type:DOI&apos;]"/>
+    <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = &apos;id-type:DOI&apos;]"/>
     <xsl:variable name="doi-url" select="concat('https://doi.org/', $doi)"/>
 
     <xsl:template match="/">
@@ -47,7 +46,7 @@
                 <xsl:apply-templates select="ddm:DDM"/>
 
                 <!-- digitalResource -->
-                <xsl:apply-templates select="files:files/files:file"/>
+                <xsl:apply-templates select="files:files/files:file[starts-with(@filepath, 'data/images')]"/>
             </xsl:element>
         </xsl:element>
     </xsl:template>
@@ -131,6 +130,7 @@
 
             <!-- references -->
             <xsl:apply-templates select="ddm:dcmiMetadata/ddm:references"/>
+            <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file[ends-with(@filepath, 'xml')]"/>
 
             <!-- hasRepresentation -->
             <xsl:call-template name="hasRepresentation"/>
@@ -169,7 +169,7 @@
         <xsl:element name="language">
             <xsl:if test="./@xsi:type">
                 <xsl:attribute name="lang">
-                    <xsl:value-of select="./@xsi:type" />
+                    <xsl:value-of select="./@xsi:type"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:value-of select="."/>
@@ -185,10 +185,10 @@
             <xsl:element name="name">
                 <xsl:attribute name="lang">
                     <xsl:if test="$title/@xml:lang">
-                        <xsl:value-of select="$title/@xml:lang" />
+                        <xsl:value-of select="$title/@xml:lang"/>
                     </xsl:if>
                     <xsl:if test="not($title/@xml:lang)">
-                        <xsl:value-of select="'en'" />
+                        <xsl:value-of select="'en'"/>
                     </xsl:if>
                 </xsl:attribute>
                 <xsl:value-of select="$title"/>
@@ -206,7 +206,7 @@
         <xsl:element name="description">
             <xsl:if test="./@xml:lang">
                 <xsl:attribute name="lang">
-                    <xsl:value-of select="./@xml:lang" />
+                    <xsl:value-of select="./@xml:lang"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:value-of select="."/>
@@ -218,7 +218,7 @@
     <!-- ==================================================== -->
     <xsl:template name="generalType">
         <generalType>
-            <xsl:value-of select="'Artefact'" />
+            <xsl:value-of select="'Artefact'"/>
         </generalType>
     </xsl:template>
 
@@ -233,7 +233,7 @@
                 <xsl:element name="name">
                     <xsl:if test="./@xml:lang">
                         <xsl:attribute name="lang">
-                            <xsl:value-of select="./@xml:lang" />
+                            <xsl:value-of select="./@xml:lang"/>
                         </xsl:attribute>
                     </xsl:if>
                     <xsl:value-of select="."/>
@@ -245,7 +245,7 @@
                 <xsl:element name="actorType">
                     <xsl:if test="./@xml:lang">
                         <xsl:attribute name="lang">
-                            <xsl:value-of select="./@xml:lang" />
+                            <xsl:value-of select="./@xml:lang"/>
                         </xsl:attribute>
                     </xsl:if>
                     <xsl:value-of select="'organization'"/>
@@ -255,7 +255,7 @@
                 <xsl:element name="actorType">
                     <xsl:if test="./@xml:lang">
                         <xsl:attribute name="lang">
-                            <xsl:value-of select="./@xml:lang" />
+                            <xsl:value-of select="./@xml:lang"/>
                         </xsl:attribute>
                     </xsl:if>
                     <xsl:value-of select="'individual'"/>
@@ -267,7 +267,7 @@
                 <xsl:element name="roles">
                     <xsl:if test="./@xml:lang">
                         <xsl:attribute name="lang">
-                            <xsl:value-of select="./@xml:lang" />
+                            <xsl:value-of select="./@xml:lang"/>
                         </xsl:attribute>
                     </xsl:if>
                     <xsl:value-of select="."/>
@@ -287,7 +287,7 @@
             <xsl:apply-templates select="ddm:dcmiMetadata/ddm:subject"/>
 
             <!-- temporal -->
-            <xsl:apply-templates select="ddm:dcmiMetadata/ddm:temporal[@schemeURI=&apos;https://data.cultureelerfgoed.nl/term/id/abr/b6df7840-67bf-48bd-aa56-7ee39435d2ed&apos;]"/>
+            <xsl:apply-templates select="ddm:dcmiMetadata/ddm:temporal[@schemeURI = &apos;https://data.cultureelerfgoed.nl/term/id/abr/b6df7840-67bf-48bd-aa56-7ee39435d2ed&apos;]"/>
 
             <!-- materials -->
             <xsl:apply-templates select="ddm:dcmiMetadata/dc:subject"/>
@@ -302,21 +302,21 @@
         <xsl:element name="heritageAssetType">
             <xsl:if test="./@xml:lang">
                 <xsl:attribute name="lang">
-                    <xsl:value-of select="./@xml:lang" />
+                    <xsl:value-of select="./@xml:lang"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:if test="./@schemeURI">
                 <xsl:attribute name="namespace">
-                    <xsl:value-of select="./@schemeURI" />
+                    <xsl:value-of select="./@schemeURI"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:if test="./@valueURI">
                 <xsl:attribute name="termUID">
-                    <xsl:value-of select="./@valueURI" />
+                    <xsl:value-of select="./@valueURI"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:attribute name="term">
-                <xsl:value-of select="." />
+                <xsl:value-of select="."/>
             </xsl:attribute>
             <xsl:value-of select="."/>
         </xsl:element>
@@ -325,12 +325,12 @@
     <!-- ==================================================== -->
     <!--                     temporal                         -->
     <!-- ==================================================== -->
-    <xsl:template match="ddm:dcmiMetadata/ddm:temporal[@schemeURI=&apos;https://data.cultureelerfgoed.nl/term/id/abr/b6df7840-67bf-48bd-aa56-7ee39435d2ed&apos;]">
+    <xsl:template match="ddm:dcmiMetadata/ddm:temporal[@schemeURI = &apos;https://data.cultureelerfgoed.nl/term/id/abr/b6df7840-67bf-48bd-aa56-7ee39435d2ed&apos;]">
         <xsl:element name="temporal">
             <xsl:element name="displayDate">
                 <xsl:if test="./@xml:lang">
                     <xsl:attribute name="lang">
-                        <xsl:value-of select="./@xml:lang" />
+                        <xsl:value-of select="./@xml:lang"/>
                     </xsl:attribute>
                 </xsl:if>
                 <xsl:value-of select="."/>
@@ -345,7 +345,7 @@
         <xsl:element name="materials">
             <xsl:if test="./@xml:lang">
                 <xsl:attribute name="lang">
-                    <xsl:value-of select="./@xml:lang" />
+                    <xsl:value-of select="./@xml:lang"/>
                 </xsl:attribute>
             </xsl:if>
             <xsl:value-of select="."/>
@@ -402,7 +402,7 @@
                 </xsl:choose>
             </accessRights>
 
-            <xsl:variable name="license" select="ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
+            <xsl:variable name="license" select="ddm:dcmiMetadata/dcterms:license[@xsi:type = &apos;dcterms:URI&apos;]"/>
             <xsl:if test="$license">
 
                 <licence>
@@ -458,10 +458,10 @@
                 <xsl:element name="name">
                     <xsl:attribute name="lang">
                         <xsl:if test="./@xml:lang">
-                            <xsl:value-of select="./@xml:lang" />
+                            <xsl:value-of select="./@xml:lang"/>
                         </xsl:if>
                         <xsl:if test="not(./@xml:lang)">
-                            <xsl:value-of select="'en'" />
+                            <xsl:value-of select="'en'"/>
                         </xsl:if>
                     </xsl:attribute>
                     <xsl:value-of select="."/>
@@ -471,6 +471,28 @@
                 </xsl:element>
             </xsl:element>
         </xsl:element>
+    </xsl:template>
+    <xsl:template match="files:files/files:file[ends-with(@filepath, 'xml')]">
+        <xsl:if test="files:accessibleToRights = 'ANONYMOUS' and files:visibleToRights = 'ANONYMOUS'">
+            <xsl:element name="references">
+                <xsl:element name="note">
+                    <xsl:choose>
+                        <xsl:when test="contains(./@filepath, 'thesaurus-nl')">
+                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in Dutch'"/>
+                        </xsl:when>
+                        <xsl:when test="contains(./@filepath, 'thesaurus-en')">
+                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in English'"/>
+                        </xsl:when>
+                        <xsl:when test="contains(./@filepath, 'object')">
+                            <xsl:value-of select="'Technical description of the object in xml format'"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:element>
+                <xsl:element name="link">
+                    <xsl:value-of select="dcterms:source"/>
+                </xsl:element>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
 
 
@@ -487,52 +509,40 @@
     <!-- ==================================================== -->
     <!--               Carare digitalResource                 -->
     <!-- ==================================================== -->
-    <xsl:template match="files:files/files:file">
+    <xsl:template match="files:files/files:file[starts-with(@filepath, 'data/images')]">
 
-        <xsl:if test="files:accessibleToRights='ANONYMOUS' and files:visibleToRights='ANONYMOUS'">
+        <xsl:if test="files:accessibleToRights = 'ANONYMOUS' and files:visibleToRights = 'ANONYMOUS'">
 
             <xsl:element name="digitalResource">
 
-                <xsl:variable name="fileName" select="str:tokenize(./@filepath, '/')[last()]"/>
+                <xsl:variable name="fileName" select="fn:tokenize(./@filepath, '/')[last()]"/>
 
                 <!-- recordInformation -->
                 <recordInformation>
-                    <id><xsl:value-of select="concat($doi, '/', $fileName)"/></id>
+                    <id>
+                        <xsl:value-of select="concat($doi, '/', $fileName)"/>
+                    </id>
                 </recordInformation>
 
                 <!-- appellation -->
                 <appellation>
-                    <name lang="en"><xsl:value-of select="$fileName"/></name>
-                    <id><xsl:value-of select="$fileName"/></id>
+                    <name lang="en">
+                        <xsl:value-of select="$fileName"/>
+                    </name>
+                    <id>
+                        <xsl:value-of select="$fileName"/>
+                    </id>
                 </appellation>
 
                 <!-- description -->
                 <description lang="en">
-                    <xsl:choose>
-                        <xsl:when test="contains(./@filepath, 'thesaurus-nl')">
-                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in Dutch'"/>
-                        </xsl:when>
-                        <xsl:when test="contains(./@filepath, 'thesaurus-en')">
-                            <xsl:value-of select="'Detailed information about the classification of this object in xml format, in English'"/>
-                        </xsl:when>
-                        <xsl:when test="contains(./@filepath, 'object')">
-                            <xsl:value-of select="'Technical description of the object in xml format'"/>
-                        </xsl:when>
-                        <xsl:when test="contains(./@filepath, 'images')">
-                            <xsl:value-of select="'Photo of the object'"/>
-                        </xsl:when>
-                    </xsl:choose>
+                    <xsl:value-of select="'Photo of the object'"/>
                 </description>
 
                 <!-- format -->
                 <format>
                     <xsl:value-of select="dcterms:format"/>
                 </format>
-
-                <!-- link -->
-                <link>
-                    <xsl:value-of select="dcterms:source"/>
-                </link>
 
                 <!-- object -->
                 <object>
@@ -545,7 +555,7 @@
                 </isShownAt>
 
                 <!-- rights -->
-                <xsl:variable name="license" select="//bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:license[@xsi:type=&apos;dcterms:URI&apos;]"/>
+                <xsl:variable name="license" select="//bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:license[@xsi:type = &apos;dcterms:URI&apos;]"/>
                 <rights>
                     <accessRights>
                         <xsl:value-of select="'Open Access'"/>
@@ -559,5 +569,4 @@
 
         </xsl:if>
     </xsl:template>
-
 </xsl:stylesheet>
