@@ -111,6 +111,7 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     (heritageAssetIdentification \ "references" \ "appellation" \ "name").head.text  shouldBe "Portable Antiquities of The Netherlands"
     (heritageAssetIdentification \ "references" \ "appellation" \ "id").head.text  shouldBe "https://www.portable-antiquities.nl/pan/#/object/public/9021"
     (heritageAssetIdentification \ "hasRepresentation").head.text  shouldBe "10.17026/dans-z74-c65r/images/PAN-00009021-001.jpg"
+    (heritageAssetIdentification \ "references")  should have size 4
   }
 
   it should "produce a Carare XML-file with a correct digitalResource contents" in {
