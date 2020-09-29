@@ -58,10 +58,10 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
   it should "produce a Carare XML-file with a correct structure" in {
     val carareXml = transformToCarare(dataset, file)
 
-    (carareXml \ "carare").head.child should have size 6
+    (carareXml \ "carare").head.child should have size 3
     carareXml \ "carare" \ "collectionInformation" should have size 1
     carareXml \ "carare" \ "heritageAssetIdentification" should have size 1
-    carareXml \ "carare" \ "digitalResource" should have size 4
+    carareXml \ "carare" \ "digitalResource" should have size 1
   }
 
   it should "produce a Carare XML-file with a correct id" in {
@@ -117,13 +117,11 @@ class XmlDdmToCarareSpec extends TestSupportFixture with BeforeAndAfterEach {
     val carareXml = transformToCarare(dataset, file)
     val digitalResource = (carareXml \ "carare" \ "digitalResource").head
 
-    (digitalResource \ "recordInformation" \ "id").text  shouldBe "10.17026/dans-z74-c65r/object.xml"
-    (digitalResource \ "appellation" \ "name").text  shouldBe "object.xml"
-    (digitalResource \ "appellation" \ "id").text  shouldBe "object.xml"
-    (digitalResource \ "description").text  shouldBe "Technical description of the object in xml format"
-    (digitalResource \ "format").text  shouldBe "text/xml"
-    (digitalResource \ "link").text  shouldBe s"https://download/location/$bagId/data/object%2Exml"
-    (digitalResource \ "object").text  shouldBe s"https://download/location/$bagId/data/object%2Exml"
+    (digitalResource \ "recordInformation" \ "id").text  shouldBe "10.17026/dans-z74-c65r/PAN-00009021-001.jpg"
+    (digitalResource \ "appellation" \ "name").text  shouldBe "PAN-00009021-001.jpg"
+    (digitalResource \ "appellation" \ "id").text  shouldBe "PAN-00009021-001.jpg"
+    (digitalResource \ "description").text  shouldBe "Photo of the object"
+    (digitalResource \ "format").text  shouldBe "image/jpeg"
     (digitalResource \ "isShownAt").text  shouldBe "https://doi.org/10.17026/dans-z74-c65r"
     (digitalResource \ "rights" \ "accessRights").text  shouldBe "Open Access"
     (digitalResource \ "rights" \ "licence").text  shouldBe "http://creativecommons.org/licenses/by-nc-sa/4.0/"

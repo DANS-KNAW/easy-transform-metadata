@@ -12,6 +12,7 @@
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:fn="http://www.w3.org/2005/xpath-functions"
+                xmlns:str="http://exslt.org/strings"
                 exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml fn bagmetadata ddm files"
                 version="2.0">
 
@@ -130,7 +131,8 @@
 
             <!-- references -->
             <xsl:apply-templates select="ddm:dcmiMetadata/ddm:references"/>
-            <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file[ends-with(@filepath, 'xml')]"/>
+            <!-- <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file[ends-with(@filepath, 'xml')]"/> -->
+            <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file['xml' = substring(@filepath, string-length(@filepath) - string-length('xml') +1)]"/>
 
             <!-- hasRepresentation -->
             <xsl:call-template name="hasRepresentation"/>
@@ -472,7 +474,7 @@
             </xsl:element>
         </xsl:element>
     </xsl:template>
-    <xsl:template match="files:files/files:file[ends-with(@filepath, 'xml')]">
+    <xsl:template match="files:files/files:file['xml' = substring(@filepath, string-length(@filepath) - string-length('xml') +1)]">
         <xsl:if test="files:accessibleToRights = 'ANONYMOUS' and files:visibleToRights = 'ANONYMOUS'">
             <xsl:element name="references">
                 <xsl:element name="note">
@@ -515,7 +517,7 @@
 
             <xsl:element name="digitalResource">
 
-                <xsl:variable name="fileName" select="fn:tokenize(./@filepath, '/')[last()]"/>
+                <xsl:variable name="fileName" select="str:tokenize(./@filepath, '/')[last()]"/>
 
                 <!-- recordInformation -->
                 <recordInformation>
