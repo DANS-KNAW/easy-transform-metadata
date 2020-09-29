@@ -13,7 +13,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:fn="http://www.w3.org/2005/xpath-functions"
                 xmlns:str="http://exslt.org/strings"
-                exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml fn bagmetadata ddm files"
+                exclude-result-prefixes="xs xsi dc dcterms dcx-dai gml dcx-gml fn str bagmetadata ddm files"
                 version="2.0">
 
     <xsl:variable name="doi" select="bagmetadata:bagmetadata/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = &apos;id-type:DOI&apos;]"/>
