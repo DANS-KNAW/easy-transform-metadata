@@ -30,10 +30,12 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
   private val files_open_registered = (metadataDir / "metadata_OPEN_ACCESS_FOR_REGISTERED_USERS/files.xml").toJava
   private val files_request = (metadataDir / "metadata_REQUEST_PERMISSION/files.xml").toJava
   private val files_no = (metadataDir / "metadata_NO_ACCESS/files.xml").toJava
+  private val files_other_namespace = (metadataDir / "metadata_OTHER_NAMESPACE/files.xml").toJava
   private val dataset_open = (metadataDir / "metadata_OPEN_ACCESS/dataset.xml").toJava
   private val dataset_open_registered = (metadataDir / "metadata_OPEN_ACCESS_FOR_REGISTERED_USERS/dataset.xml").toJava
   private val dataset_request = (metadataDir / "metadata_REQUEST_PERMISSION/dataset.xml").toJava
   private val dataset_no = (metadataDir / "metadata_NO_ACCESS/dataset.xml").toJava
+  private val dataset_other_namespace = (metadataDir / "metadata_OTHER_NAMESPACE/dataset.xml").toJava
   private val downloadUrl = new URI("https://download/location/")
   private val bagId = UUID.fromString("12345678-1234-1234-1234-123456789012")
 
@@ -59,6 +61,20 @@ class XmlTransformationSpec extends TestSupportFixture with BeforeAndAfterEach {
     val sourceElement = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
     sourceElement.child should have size 1
     firstFileElement.child should have size origSizeFirstFileElement + 1
+  }
+
+  it should "use dcterms namespace in the new <source> element" in {
+    val filesXml = XML.loadFile(files_open)
+    val datasetXml = XML.loadFile(dataset_open)
+    val sourceElement = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
+    sourceElement.toString should startWith ("<dcterms:source>")
+  }
+
+  it should "use dc namespace in the new <source> element" in {
+    val filesXml = XML.loadFile(files_other_namespace)
+    val datasetXml = XML.loadFile(dataset_other_namespace)
+    val sourceElement = (XmlTransformation.enrichFilesXml(bagId, filesXml, datasetXml, downloadUrl) \ "file" \ "source").head
+    sourceElement.toString should startWith ("<dc:source>")
   }
 
   it should "give download path as value for the new <source> element in all file elements" in {
