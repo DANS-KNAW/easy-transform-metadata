@@ -26,9 +26,6 @@ import scala.xml.{ Elem, Node, XML }
 
 object XmlTransformation {
 
-  val DEFAULT_DC_PREFIX = "dcterms"
-  val DEFAULT_DC_URI = "http://purl.org/dc/terms/"
-
   private val accessibleToRightsMap = Map(
     AccessRights.OPEN_ACCESS -> AccessibleToRights.ANONYMOUS,
     AccessRights.OPEN_ACCESS_FOR_REGISTERED_USERS -> AccessibleToRights.KNOWN,
@@ -36,11 +33,11 @@ object XmlTransformation {
     AccessRights.NO_ACCESS -> AccessibleToRights.NONE)
 
   def enrichFilesXml(bagId: BagId, filesXml: Node, datasetXml: Node, downloadUrl: URI): Node = {
-    val dcNameSpace = getDcNamespace(filesXml)
+    val dctermsNameSpace = getDctermsNamespace(filesXml)
     val accessRights = getAccessRights(datasetXml)
     val rule = new RewriteRule {
       override def transform(n: Node): Seq[Node] = n match {
-        case elem: Elem if elem.label == "file" => enrichFileElement(bagId, elem, dcNameSpace, accessRights, downloadUrl)
+        case elem: Elem if elem.label == "file" => enrichFileElement(bagId, elem, dctermsNameSpace, accessRights, downloadUrl)
         case _ => n
       }
     }
@@ -76,8 +73,8 @@ object XmlTransformation {
     file.copy(child = file.child ++ sourceElement)
   }
 
-  private def getDcNamespace(filesXml: Node): String = {
-    Option(filesXml.scope.getPrefix(DEFAULT_DC_URI)).getOrElse(DEFAULT_DC_PREFIX)
+  private def getDctermsNamespace(filesXml: Node): String = {
+    Option(filesXml.scope.getPrefix("http://purl.org/dc/terms/")).getOrElse("dcterms")
   }
 
   private def getAccessRights(datasetXml: Node): AccessRights = {
