@@ -47,7 +47,7 @@
                 <xsl:apply-templates select="ddm:DDM"/>
 
                 <!-- digitalResource -->
-                <xsl:apply-templates select="files:files/files:file[starts-with(@filepath, 'data/images')]"/>
+                <xsl:apply-templates select="files:files/files:file[starts-with(dcterms:format, 'image')]"/>
             </xsl:element>
         </xsl:element>
     </xsl:template>
@@ -132,7 +132,7 @@
             <!-- references -->
             <xsl:apply-templates select="ddm:dcmiMetadata/ddm:references"/>
             <!-- <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file[ends-with(@filepath, 'xml')]"/> -->
-            <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file['xml' = substring(@filepath, string-length(@filepath) - string-length('xml') +1)]"/>
+            <!--  <xsl:apply-templates select="/bagmetadata:bagmetadata/files:files/files:file['xml' = substring(@filepath, string-length(@filepath) - string-length('xml') +1)]"/> -->
 
             <!-- hasRepresentation -->
             <xsl:call-template name="hasRepresentation"/>
@@ -362,7 +362,7 @@
         <xsl:element name="spatial">
             <xsl:element name="locationSet">
                 <xsl:element name="namedLocation">
-                    <xsl:value-of select="concat(., ' (undisclosed location)')"/>
+                    <xsl:value-of select="."/>
                 </xsl:element>
             </xsl:element>
         </xsl:element>
@@ -408,6 +408,7 @@
             <xsl:if test="$license">
 
                 <licence>
+                    <!-- TODO: use the values as mentioned in https://pro.europeana.eu/page/available-rights-statements -->
                     <xsl:value-of select="$license"/>
                 </licence>
 
@@ -502,7 +503,7 @@
     <!--                  hasRepresentation                   -->
     <!-- ==================================================== -->
     <xsl:template name="hasRepresentation">
-        <xsl:variable name="filepath" select="/bagmetadata:bagmetadata/files:files/files:file[starts-with(@filepath, 'data/images')]/@filepath"/>
+        <xsl:variable name="filepath" select="/bagmetadata:bagmetadata/files:files/files:file[starts-with(dcterms:format, 'image')][1]/@filepath"/>
         <xsl:element name="hasRepresentation">
             <xsl:value-of select="concat($doi, substring($filepath, 5))"/>
         </xsl:element>
@@ -511,13 +512,13 @@
     <!-- ==================================================== -->
     <!--               Carare digitalResource                 -->
     <!-- ==================================================== -->
-    <xsl:template match="files:files/files:file[starts-with(@filepath, 'data/images')]">
+    <xsl:template match="files:files/files:file[starts-with(dcterms:format, 'image')]">
 
         <xsl:if test="files:accessibleToRights = 'ANONYMOUS' and files:visibleToRights = 'ANONYMOUS'">
 
             <xsl:element name="digitalResource">
 
-                <xsl:variable name="fileName" select="str:tokenize(./@filepath, '/')[last()]"/>
+                <xsl:variable name="fileName" select="fn:tokenize(./@filepath, '/')[last()]"/>
 
                 <!-- recordInformation -->
                 <recordInformation>
