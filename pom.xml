@@ -27,7 +27,7 @@
 
     <groupId>nl.knaw.dans.easy</groupId>
     <artifactId>easy-transform-metadata</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
 
     <name>EASY Transform Metadata</name>
     <url>https://github.com/DANS-KNAW/easy-transform-metadata</url>
@@ -40,7 +40,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/DANS-KNAW/easy-transform-metadata</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.1.2</tag>
     </scm>
 
     <dependencies>
