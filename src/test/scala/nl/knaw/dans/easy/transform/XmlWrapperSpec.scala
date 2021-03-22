@@ -15,16 +15,11 @@
  */
 package nl.knaw.dans.easy.transform
 
-import java.io.StringReader
-
 import better.files.File
-import javax.xml.XMLConstants
-import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.{ Schema, SchemaFactory, Validator }
 import nl.knaw.dans.easy.transform.fixture.TestSupportFixture
 import org.scalatest.BeforeAndAfterEach
 
-import scala.xml.{ Node, Utility, XML }
+import scala.xml.{Utility, XML}
 
 class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
 
@@ -46,21 +41,5 @@ class XmlWrapperSpec extends TestSupportFixture with BeforeAndAfterEach {
     result \ "DDM" should have size 1
     result \ "files" should have size 1
     result.child.map(_.label) should contain inOrderOnly("DDM", "files")
-  }
-
-  it should "validate the wrapping XML against bagmetadata schema" in {
-    val datasetXml = XML.loadFile(dataset_open)
-    val filesXml = XML.loadFile(files_open)
-    val result = XmlWrapper.wrap(datasetXml, filesXml)
-
-    validate(result, File(bagmetadataSchema))
-  }
-
-  private def validate(xmlFile: Node, xsdFile: File): Unit = {
-    val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-    val schema: Schema = schemaFactory.newSchema(xsdFile.toJava)
-    val validator: Validator = schema.newValidator()
-    val xml = new StreamSource(new StringReader(xmlFile.toString()))
-    validator.validate(xml)
   }
 }
